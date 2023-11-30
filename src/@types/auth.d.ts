@@ -51,14 +51,18 @@ export type SignUpWithSocialAccountProvider =
   | AUTH_PROVIDERS.Google
   | AUTH_PROVIDERS.Github;
 
-
 export interface AuthState {
   state: {
     loading: boolean;
     isLoggedInCheck: boolean;
     authenticated: boolean;
     token: string | undefined;
-    data: null,
+    data: null;
+  };
+  auth: {
+    provider: string | null;
+    credentials: any;
   };
   setAuthState: (update: Partial<AuthState["state"]>) => void;
+  setAuthModeState: (update: Partial<AuthState["auth"]>) => void;
 }

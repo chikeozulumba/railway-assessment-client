@@ -13,7 +13,10 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import useFirebaseAuth from "@/hooks/useFirebaseAuth";
 import { FirebaseAuth } from "@/config";
 import { AuthState, AuthUserState } from "@/@types/auth";
-import { authStoreInitialState, useAuthStore } from "@/store/auth";
+import {
+  initialState as authStoreInitialState,
+  useAuthStore,
+} from "@/store/auth";
 import { graphQLAPI } from "@/lib/api";
 
 export const AuthUserContext = createContext<
@@ -63,7 +66,7 @@ export function AuthUserProvider({ children }: AuthUserProviderProps) {
 
         if (!userHasProfileLoaded) return await logout();
 
-        await setAuthState({
+        setAuthState({
           loading: false,
           isLoggedInCheck: true,
           authenticated: true,
@@ -77,7 +80,7 @@ export function AuthUserProvider({ children }: AuthUserProviderProps) {
         });
         return;
       } catch (error) {
-        await setAuthState({
+        setAuthState({
           loading: false,
           isLoggedInCheck: true,
           authenticated: false,

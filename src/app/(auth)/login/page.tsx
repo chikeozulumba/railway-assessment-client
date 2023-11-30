@@ -7,22 +7,29 @@ import { FaGithub } from "react-icons/fa";
 import { AUTH_PROVIDERS, NAVIGATION_LINKS_PATH } from "@/constants";
 import { signUpWithSocialAccount } from "@/firebase/auth";
 import { Toast } from "@/lib/toast";
+import { useAuthStore } from "@/store/auth";
 
 import type { SignUpWithSocialAccountProvider } from "@/@types/auth";
 
 export default function Login() {
   const router = useRouter();
   const search = useSearchParams();
+  const { auth, setAuthModeState } = useAuthStore();
 
   const handleAuthentication = async (
     provider: SignUpWithSocialAccountProvider
   ): Promise<boolean | void> => {
-    const { response, credentials, error } = await signUpWithSocialAccount(
-      provider
-    );
+    if (auth.provider !== null) return;
+
+    setAuthModeState({ provider });
+    const { response, error } = await signUpWithSocialAccount(provider);
 
     if (error && !response) {
-      Toast(`Invalid login attempt, please try again.`, { type: "error", time: 4 });
+      setAuthModeState({ provider: null });
+      Toast(`Invalid login attempt, please try again.`, {
+        type: "error",
+        time: 4,
+      });
       return;
     }
 
@@ -33,6 +40,8 @@ export default function Login() {
     );
   };
 
+  const shouldDisable = auth.provider !== null;
+
   return (
     <Center minHeight={"100vh"} height={"100%"}>
       <Stack spacing={4} align={"center"} maxW={"xs"} w={"full"}>
@@ -42,13 +51,16 @@ export default function Login() {
           leftIcon={<FcGoogle />}
           borderRadius={"12px"}
           background={"#F4DFC8"}
+          disabled={shouldDisable}
           _hover={{
             background: "#F4EAE0",
           }}
         >
           <Center>
             <Text color={"#000"} fontWeight={"medium"}>
-              Continue with Google
+              {auth.provider === AUTH_PROVIDERS.Google
+                ? "Please wait..."
+                : "Continue with Google"}
             </Text>
           </Center>
         </Button>
@@ -58,13 +70,16 @@ export default function Login() {
           leftIcon={<FaGithub style={{ color: "#000" }} />}
           borderRadius={"12px"}
           background={"#F4DFC8"}
-          _hover={{
+          disabled={shouldDisable}
+          _hover={{  
             background: "#F4EAE0",
           }}
         >
           <Center>
             <Text color={"#000"} fontWeight={"medium"}>
-              Continue with Github
+              {auth.provider === AUTH_PROVIDERS.Github
+                ? "Please wait..."
+                : "Continue with Github"}
             </Text>
           </Center>
         </Button>
