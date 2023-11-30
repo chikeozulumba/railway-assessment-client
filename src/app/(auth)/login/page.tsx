@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Button, Center, Stack, Text } from "@chakra-ui/react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -6,6 +6,8 @@ import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { AUTH_PROVIDERS, NAVIGATION_LINKS_PATH } from "@/constants";
 import { signUpWithSocialAccount } from "@/firebase/auth";
+import { Toast } from "@/lib/toast";
+
 import type { SignUpWithSocialAccountProvider } from "@/@types/auth";
 
 export default function Login() {
@@ -15,12 +17,14 @@ export default function Login() {
   const handleAuthentication = async (
     provider: SignUpWithSocialAccountProvider
   ): Promise<boolean | void> => {
-    const { response, credentials, error } = await signUpWithSocialAccount(provider);
+    const { response, credentials, error } = await signUpWithSocialAccount(
+      provider
+    );
+
     if (error && !response) {
+      Toast(`Invalid login attempt, please try again.`, { type: "error", time: 4 });
       return;
     }
-
-    alert('login user')
 
     const redirectUrl = search.get("redirect_url");
 

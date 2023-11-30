@@ -30,19 +30,20 @@ export function AuthUserProvider({ children }: AuthUserProviderProps) {
 
   const authStateChanged = useCallback(
     async (user: User | null) => {
-      if (!user) {
-        setAuthState({
-          loading: false,
-          isLoggedInCheck: true,
-          authenticated: false,
-        });
-        return logout();
-      }
+      try {
+        if (!user) {
+          setAuthState({
+            loading: false,
+            isLoggedInCheck: true,
+            authenticated: false,
+          });
+          return logout();
+        }
 
-      const token = await user.getIdToken();
-      const response = await graphQLAPI(
-        {
-          query: `
+        const token = await user.getIdToken();
+        const response = await graphQLAPI(
+          {
+            query: `
             query {
                 me {
                     id
@@ -54,27 +55,34 @@ export function AuthUserProvider({ children }: AuthUserProviderProps) {
                 }
                 }
                 `,
-        },
-        token
-      );
+          },
+          token
+        );
 
-      const userHasProfileLoaded = typeof response.data?.me?.id === "string";
+        const userHasProfileLoaded = typeof response.data?.me?.id === "string";
 
-      if (!userHasProfileLoaded) return await logout();
+        if (!userHasProfileLoaded) return await logout();
 
-      await setAuthState({
-        loading: false,
-        isLoggedInCheck: true,
-        authenticated: true,
-        token,
-        data: response.data?.me,
-      });
+        await setAuthState({
+          loading: false,
+          isLoggedInCheck: true,
+          authenticated: true,
+          token,
+          data: response.data?.me,
+        });
 
-      localStorage.setItem("firebaseToken", token);
-      nookies.set(undefined, "firebaseToken", token, {
-        path: "/",
-      });
-      return;
+        localStorage.setItem("firebaseToken", token);
+        nookies.set(undefined, "firebaseToken", token, {
+          path: "/",
+        });
+        return;
+      } catch (error) {
+        await setAuthState({
+          loading: false,
+          isLoggedInCheck: true,
+          authenticated: false,
+        });
+      }
     },
     [logout, setAuthState]
   );

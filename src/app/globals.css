@@ -1,4 +1,6 @@
 
+@import url(node_modules/notie/dist/notie.min.css);
+
 @font-face {
   font-family: "Matter";
   font-weight: 400;
@@ -32,7 +34,7 @@ body {
   max-width: 100vw;
   overflow-x: hidden;
   font-family: var(--font-mono);
-  background-color: #FAF6F0;
+  background-color: #faf6f0;
 }
 
 body {
@@ -43,6 +45,55 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+.notie-container {
+  box-shadow: none;
+}
+
+.notie-background-success {
+  background: #000000 !important;
+  color: #fff !important;
+}
+
+.notie-background-warning {
+  background: #000000 !important;
+  color: #fff !important;
+}
+
+.notie-background-error {
+  background: #000000 !important;
+  color: white;
+}
+
+.notie-background-info {
+  background: #000000 !important;
+  color: #fff !important;
+}
+
+.notie-background-neutral {
+  background: #000000 !important;
+  color: #fff !important;
+}
+
+.notie-background-success .notie-textbox-inner {
+  color: #fff !important;
+}
+
+.notie-textbox-inner {
+  font-size: 12px;
+}
+
+.notie-textbox {
+  padding: 10px !important;
+}
+
+.notie-container {
+  box-shadow: none !important;
+}
+
+.notie-container {
+  z-index: 9999999 !important;
 }
 
 a {
