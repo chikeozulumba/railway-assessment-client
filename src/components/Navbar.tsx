@@ -11,6 +11,7 @@ import {
   MenuItem,
   Stack,
   LinkBox,
+  Container,
 } from "@chakra-ui/react";
 import { Link } from "@chakra-ui/next-js";
 import { useAuthStore } from "@/store/auth";
@@ -26,36 +27,40 @@ export function NavigationBar() {
 
   return (
     <>
-      <Box bg={"#000000"} px={4}>
-        <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-          <Link href={"/"} color={"white"} fontWeight={800}>
-            Demo App
-          </Link>
+      <Box bg={"#000000"}>
+        <Container maxW="1024px" px={4}>
+          <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
+            <Link href={"/"} color={"white"} fontWeight={800}>
+              Demo App
+            </Link>
 
-          <Flex alignItems={"center"}>
-            <Stack direction={"row"} spacing={7}>
-              <Menu size={'sm'}>
-                <MenuButton
-                  as={Button}
-                  rounded={"full"}
-                  variant={"link"}
-                  cursor={"pointer"}
-                  minW={0}
-                >
-                  <Avatar size={"sm"} src={(user?.data as any)?.avatarUrl} />
-                </MenuButton>
-                <MenuList alignItems={"center"}>
-                  <MenuItem>
-                    <Link href={'/settings'} fontSize={"small"}>Account Settings</Link>
-                  </MenuItem>
-                  <MenuItem onClick={logout} fontSize={"small"}>
-                    Logout
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-            </Stack>
+            <Flex alignItems={"center"}>
+              <Stack direction={"row"} spacing={7}>
+                <Menu size={"sm"}>
+                  <MenuButton
+                    as={Button}
+                    rounded={"full"}
+                    variant={"link"}
+                    cursor={"pointer"}
+                    minW={0}
+                  >
+                    <Avatar size={"sm"} src={(user?.data as any)?.avatarUrl} />
+                  </MenuButton>
+                  <MenuList alignItems={"center"}>
+                    <MenuItem>
+                      <Link href={"/settings"} fontSize={"small"}>
+                        Account Settings
+                      </Link>
+                    </MenuItem>
+                    <MenuItem onClick={logout} fontSize={"small"}>
+                      Logout
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
+              </Stack>
+            </Flex>
           </Flex>
-        </Flex>
+        </Container>
       </Box>
     </>
   );
