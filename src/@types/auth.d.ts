@@ -1,49 +1,11 @@
 import { AUTH_PROVIDERS } from "@/constants";
-import type { User } from "firebase/auth";
+import { User } from "./user";
 
 export type AuthUserState = {
   loading: boolean;
   isLoggedInCheck: boolean;
   authenticated?: boolean;
   token?: string;
-};
-
-export type AuthUser = {
-  uid: string;
-  email?: string;
-  name?: string;
-  avatar?: string;
-  token?: string;
-  authenticated?: boolean;
-};
-
-export type AuthUserProfile = {
-  avatar?: string;
-  countryId: string | null;
-  createdAt: string;
-  email: string;
-  emailVerifiedAt: string | null;
-  firstName: string | null;
-  flagged: boolean;
-  id: string;
-  lastName: string | null;
-  name: string;
-  phoneNumber: string | null;
-  provider: string;
-  rating: number;
-  reported: boolean;
-  status: "active" | "inactive" | "suspended" | "deleted";
-  uid: string;
-  updatedAt: string;
-  username: string;
-};
-
-export type AuthorizeUserRequest = {
-  uid: string;
-  email: string;
-  name: string | null;
-  avatar: string | null;
-  provider: string;
 };
 
 export type SignUpWithSocialAccountProvider =
@@ -57,11 +19,10 @@ export interface AuthState {
     isLoggedInCheck: boolean;
     authenticated: boolean;
     token: string | undefined;
-    data: null;
+    data: null | User;
   };
   auth: {
     provider: string | null;
-    credentials: any;
   };
   setAuthState: (update: Partial<AuthState["state"]>) => void;
   setAuthModeState: (update: Partial<AuthState["auth"]>) => void;
