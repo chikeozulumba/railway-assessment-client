@@ -27,10 +27,10 @@ export function NavigationBar() {
 
   return (
     <>
-      <Box bg={"#000000"}>
+      <Box bg={"#fff"} boxShadow="xs">
         <Container maxW="1024px" px={4}>
           <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-            <Link href={"/"} color={"white"} fontWeight={800}>
+            <Link href={"/"} color={"#000"} fontWeight={800}>
               Demo App
             </Link>
 
@@ -48,7 +48,13 @@ export function NavigationBar() {
                   </MenuButton>
                   <MenuList alignItems={"center"}>
                     <MenuItem>
-                      <Link href={"/settings"} fontSize={"small"}>
+                      <Link
+                        href={"/settings"}
+                        width={"100%"}
+                        textDecoration={"none"}
+                        _hover={{ textDecoration: "none" }}
+                        fontSize={"small"}
+                      >
                         Account Settings
                       </Link>
                     </MenuItem>

@@ -7,17 +7,20 @@ import {
   useEffect,
   useCallback,
 } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 import nookies from "nookies";
-import { onAuthStateChanged, User } from "firebase/auth";
-
-import useFirebaseAuth from "@/hooks/useFirebaseAuth";
+import { useQuery } from "@apollo/client";
 import { FirebaseAuth } from "@/config";
-import { AuthState, AuthUserState } from "@/@types/auth";
 import {
   initialState as authStoreInitialState,
   useAuthStore,
 } from "@/store/auth";
 import { graphQLAPI } from "@/lib/api";
+import type { User } from "firebase/auth";
+import { apolloClient } from "@/lib/client";
+import { useTokenStore } from "@/store/token";
+import { GET_PROFILE_AND_RAILWAY_TOKENS } from "@/graphql/queries";
+import type { AuthState, AuthUserState } from "@/@types/auth";
 
 export const AuthUserContext = createContext<
   AuthUserState & AuthState["state"]
@@ -28,58 +31,45 @@ type AuthUserProviderProps = {
 };
 
 export function AuthUserProvider({ children }: AuthUserProviderProps) {
+  const { data, refetch, loading } = useQuery(GET_PROFILE_AND_RAILWAY_TOKENS);
   const { state: user, setAuthState } = useAuthStore();
-  const { logout } = useFirebaseAuth();
+  const { addToken } = useTokenStore();
 
   const authStateChanged = useCallback(
     async (user: User | null) => {
       try {
-        if (!user) {
+        if (user) {
+          const token = await user?.getIdToken();
+
+          if (data) {
+            setAuthState({
+              loading: false,
+              isLoggedInCheck: true,
+              authenticated: true,
+              token,
+              data: data?.me,
+            });
+
+            addToken(data.getRailwayTokens);
+          }
+
+          if (token) {
+            localStorage.setItem("firebaseToken", token);
+            nookies.set(undefined, "firebaseToken", token, {
+              path: "/",
+            });
+          }
+
+          return;
+        } else {
           setAuthState({
             loading: false,
             isLoggedInCheck: true,
             authenticated: false,
           });
-          return logout();
         }
-
-        const token = await user.getIdToken();
-        const response = await graphQLAPI(
-          {
-            query: `
-            query {
-                me {
-                    id
-                    fullName
-                    email
-                    provider
-                    providerId
-                    avatarUrl
-                }
-                }
-                `,
-          },
-          token
-        );
-
-        const userHasProfileLoaded = typeof response.data?.me?.id === "string";
-
-        if (!userHasProfileLoaded) return await logout();
-
-        setAuthState({
-          loading: false,
-          isLoggedInCheck: true,
-          authenticated: true,
-          token,
-          data: response.data?.me,
-        });
-
-        localStorage.setItem("firebaseToken", token);
-        nookies.set(undefined, "firebaseToken", token, {
-          path: "/",
-        });
-        return;
       } catch (error) {
+        console.log(error)
         setAuthState({
           loading: false,
           isLoggedInCheck: true,
@@ -87,14 +77,15 @@ export function AuthUserProvider({ children }: AuthUserProviderProps) {
         });
       }
     },
-    [logout, setAuthState]
+    [addToken, data, setAuthState]
   );
 
   // listen for Firebase state change
   useEffect(() => {
+    if (loading) return;
     const unsubscribe = onAuthStateChanged(FirebaseAuth, authStateChanged);
     return () => unsubscribe();
-  }, [authStateChanged]);
+  }, [authStateChanged, loading]);
 
   // force refresh the token every 10 minutes
   useEffect(() => {

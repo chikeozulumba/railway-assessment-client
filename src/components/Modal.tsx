@@ -19,6 +19,8 @@ type Props = {
   isOpen: boolean;
   handleOnClose: () => void;
   handleOnTrigger: (value: boolean) => void;
+  proceed?: () => void;
+  buttonDisabled?: boolean;
 } & Partial<ModalProps>;
 
 export function ModalComponent({
@@ -27,6 +29,8 @@ export function ModalComponent({
   children,
   isOpen,
   handleOnClose,
+  proceed,
+  buttonDisabled,
   ...args
 }: Props) {
   return (
@@ -37,7 +41,7 @@ export function ModalComponent({
           <ModalHeader>
             <h3>{title}</h3>
             {description && (
-              <Text fontSize={"sm"} fontWeight={300} opacity={"0.7"}>
+              <Text as={"h6"} fontSize={"sm"} fontWeight={300} opacity={"0.7"}>
                 {description}
               </Text>
             )}
@@ -47,15 +51,16 @@ export function ModalComponent({
 
           <ModalFooter>
             <Button
-              bg="#000"
-              color={"#FAF6F0"}
+              bg="#F4DFC8"
+              color={"#000"}
               mr={3}
-              onClick={handleOnClose}
+              onClick={proceed}
               fontSize={"small"}
-              fontWeight={400}
+              fontWeight={600}
               _hover={{
-                bg: "#000",
+                bg: "#F4EAE0",
               }}
+              disabled={buttonDisabled}
             >
               Proceed
             </Button>
@@ -66,8 +71,9 @@ export function ModalComponent({
               fontSize={"small"}
               fontWeight={400}
               _hover={{
-                bg: "#F4EAE0",
+                bg: "#F4EAE07F",
               }}
+              disabled={buttonDisabled}
             >
               Cancel
             </Button>

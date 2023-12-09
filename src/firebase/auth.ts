@@ -86,7 +86,7 @@ export const signUpWithSocialAccount = async (
       {
         fullName: user.displayName,
         email: email,
-        provider: provider.toUpperCase(),
+        provider,
         providerId: user.uid,
         avatarUrl: user.photoURL,
       },

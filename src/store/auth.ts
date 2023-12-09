@@ -1,5 +1,5 @@
-import { AuthState } from "@/@types/auth";
 import { create } from "zustand";
+import type { AuthState } from "@/@types/auth";
 
 export const initialState = {
   loading: true,

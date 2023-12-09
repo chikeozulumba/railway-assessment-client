@@ -66,8 +66,9 @@ body {
 }
 
 .notie-background-info {
-  background: #000000 !important;
-  color: #fff !important;
+  background: #fff !important;
+  color: red !important;
+  font-weight: 500;
 }
 
 .notie-background-neutral {

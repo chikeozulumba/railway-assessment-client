@@ -6,7 +6,7 @@ export type User = {
   provider: string;
   avatarUrl: string | undefined;
   status: string;
-  railwayAccountConnected: boolean;
+  railwayAccountStatus: string;
   createdAt: string;
   updatedAt: string;
 };

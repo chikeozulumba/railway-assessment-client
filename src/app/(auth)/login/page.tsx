@@ -14,14 +14,13 @@ import type { SignUpWithSocialAccountProvider } from "@/@types/auth";
 export default function Login() {
   const router = useRouter();
   const search = useSearchParams();
-  const { auth, setAuthModeState } = useAuthStore();
+  const { auth, setAuthModeState, setAuthState } = useAuthStore();
 
   const handleAuthentication = async (
     provider: SignUpWithSocialAccountProvider
   ): Promise<boolean | void> => {
     if (auth.provider !== null) return;
 
-    setAuthModeState({ provider });
     const { response, error } = await signUpWithSocialAccount(provider);
 
     if (error && !response) {
@@ -33,8 +32,14 @@ export default function Login() {
       return;
     }
 
-    const redirectUrl = search.get("redirect_url");
+    setAuthState({
+      loading: false,
+      isLoggedInCheck: true,
+      authenticated: true,
+      data: response,
+    });
 
+    const redirectUrl = search.get("redirect_url");
     return router.replace(
       redirectUrl ? redirectUrl.toString() : NAVIGATION_LINKS_PATH.Home
     );
@@ -53,7 +58,8 @@ export default function Login() {
           background={"#F4DFC8"}
           disabled={shouldDisable}
           _hover={{
-            background: "#F4EAE0",
+            background: shouldDisable ? undefined : "#F4EAE0",
+            cursor: shouldDisable ? "not-allowed" : "cursor-pointer",
           }}
         >
           <Center>
@@ -71,8 +77,9 @@ export default function Login() {
           borderRadius={"12px"}
           background={"#F4DFC8"}
           disabled={shouldDisable}
-          _hover={{  
-            background: "#F4EAE0",
+          _hover={{
+            background: shouldDisable ? undefined : "#F4EAE0",
+            cursor: shouldDisable ? "not-allowed" : "cursor-pointer",
           }}
         >
           <Center>
