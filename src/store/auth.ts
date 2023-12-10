@@ -2,7 +2,7 @@ import { create } from "zustand";
 import type { AuthState } from "@/@types/auth";
 
 export const initialState = {
-  loading: true,
+  loading: false,
   isLoggedInCheck: false,
   authenticated: false,
   token: undefined,

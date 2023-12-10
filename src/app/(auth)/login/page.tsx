@@ -5,9 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { AUTH_PROVIDERS, NAVIGATION_LINKS_PATH } from "@/constants";
-import { signUpWithSocialAccount } from "@/firebase/auth";
 import { Toast } from "@/lib/toast";
 import { useAuthStore } from "@/store/auth";
+import useFirebaseAuth from "@/hooks/useFirebaseAuth";
+import { useAuthorize } from "@/hooks/useAuthorizeWithSocialAccount";
 
 import type { SignUpWithSocialAccountProvider } from "@/@types/auth";
 
@@ -16,33 +17,49 @@ export default function Login() {
   const search = useSearchParams();
   const { auth, setAuthModeState, setAuthState } = useAuthStore();
 
+  const { signUpWithSocialAccount, authorizeUser, loading } = useAuthorize();
+  const { logout } = useFirebaseAuth();
+
   const handleAuthentication = async (
     provider: SignUpWithSocialAccountProvider
   ): Promise<boolean | void> => {
     if (auth.provider !== null) return;
 
-    const { response, error } = await signUpWithSocialAccount(provider);
+    const { error, user, token } = await signUpWithSocialAccount(provider);
 
-    if (error && !response) {
+    if (error && !user) {
       setAuthModeState({ provider: null });
       Toast(`Invalid login attempt, please try again.`, {
         type: "error",
         time: 4,
       });
+      await logout();
       return;
     }
 
-    setAuthState({
-      loading: false,
-      isLoggedInCheck: true,
-      authenticated: true,
-      data: response,
+    const { data } = await authorizeUser({
+      variables: { payload: user },
+      context: { headers: { Authorization: "Bearer " + token } },
     });
 
-    const redirectUrl = search.get("redirect_url");
-    return router.replace(
-      redirectUrl ? redirectUrl.toString() : NAVIGATION_LINKS_PATH.Home
-    );
+    if (!loading && data) {
+      setAuthState({
+        loading: false,
+        isLoggedInCheck: true,
+        authenticated: true,
+        data: data.authorize,
+      });
+
+      const redirectUrl = search.get("redirect_url");
+      return router.replace(
+        redirectUrl ? redirectUrl.toString() : NAVIGATION_LINKS_PATH.Home
+      );
+    }
+
+    Toast(`Invalid login attempt, please try again.`, {
+      type: "error",
+      time: 4,
+    });
   };
 
   const shouldDisable = auth.provider !== null;

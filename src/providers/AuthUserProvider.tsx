@@ -15,9 +15,7 @@ import {
   initialState as authStoreInitialState,
   useAuthStore,
 } from "@/store/auth";
-import { graphQLAPI } from "@/lib/api";
 import type { User } from "firebase/auth";
-import { apolloClient } from "@/lib/client";
 import { useTokenStore } from "@/store/token";
 import { GET_PROFILE_AND_RAILWAY_TOKENS } from "@/graphql/queries";
 import type { AuthState, AuthUserState } from "@/@types/auth";
@@ -31,7 +29,7 @@ type AuthUserProviderProps = {
 };
 
 export function AuthUserProvider({ children }: AuthUserProviderProps) {
-  const { data, refetch, loading } = useQuery(GET_PROFILE_AND_RAILWAY_TOKENS);
+  const { data, loading } = useQuery(GET_PROFILE_AND_RAILWAY_TOKENS);
   const { state: user, setAuthState } = useAuthStore();
   const { addToken } = useTokenStore();
 
@@ -43,7 +41,6 @@ export function AuthUserProvider({ children }: AuthUserProviderProps) {
 
           if (data) {
             setAuthState({
-              loading: false,
               isLoggedInCheck: true,
               authenticated: true,
               token,
@@ -63,15 +60,12 @@ export function AuthUserProvider({ children }: AuthUserProviderProps) {
           return;
         } else {
           setAuthState({
-            loading: false,
             isLoggedInCheck: true,
             authenticated: false,
           });
         }
       } catch (error) {
-        console.log(error)
         setAuthState({
-          loading: false,
           isLoggedInCheck: true,
           authenticated: false,
         });
@@ -100,8 +94,8 @@ export function AuthUserProvider({ children }: AuthUserProviderProps) {
 
   return (
     <AuthUserContext.Provider value={user}>
-      {user.loading && <div>Loading...</div>}
-      {!user.loading && children}
+      {loading && <div>Loading...</div>}
+      {!loading && children}
     </AuthUserContext.Provider>
   );
 }
