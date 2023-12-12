@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import dayjs from "dayjs";
-import localizedFormat from "dayjs/plugin/localizedFormat";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ApolloError, useMutation } from "@apollo/client";
 import {
@@ -34,8 +32,7 @@ import { useAuthStore } from "@/store/auth";
 import { useTokenStore } from "@/store/token";
 import { GET_PROFILE_AND_RAILWAY_TOKENS } from "@/graphql/queries";
 import { AddRailwayTokenComponent } from "./components/AddRailwayToken";
-
-dayjs.extend(localizedFormat);
+import { dateFormatter } from "@/utils/date";
 
 export default function Settings() {
   const { state: railwayTokens } = useTokenStore();
@@ -100,17 +97,22 @@ export default function Settings() {
   }
 
   const deleteRailwayToken = async (id: string, name?: string) => {
-    const tokenName = name || "remove";
+    const tokenName = (name || "remove").trim();
     const entry = window.prompt(
       `Warning - This action cannot be reversed\nType "${tokenName}" to continue.`
     );
 
-    const warnUser = tokenName.toLowerCase() === entry?.toLowerCase();
+    const warnUser = tokenName.toLowerCase() === entry?.toLowerCase().trim();
     if (!warnUser) return;
 
     try {
       const response = await removeRailwayToken({ variables: { id } });
-      console.log(response);
+      if (response.data.removeRailwayToken?.status === "success") {
+        Toast(`Railway token (${tokenName}) removed from RunThrough.`, {
+          type: "success",
+          time: 4,
+        });
+      }
     } catch (error) {
       if (error instanceof ApolloError) {
         Toast(error.message, { type: "error", time: 4 });
@@ -150,8 +152,9 @@ export default function Settings() {
         <Text fontSize={{ base: "16px" }} fontWeight={500}>
           Manage Railway API Tokens
         </Text>
-        <Text fontSize={{ base: "14px" }} fontWeight={300} opacity={'0.7'}>
-          Programmatically access your Railway account using these API tokens/secrets.
+        <Text fontSize={{ base: "14px" }} fontWeight={300} opacity={"0.7"}>
+          Programmatically access your Railway account using these API
+          tokens/secrets.
           <Link
             target="_blank"
             href={"https://docs.railway.app/reference/public-api"}
@@ -185,7 +188,7 @@ export default function Settings() {
                   </Td>
                   <Td>
                     <Text fontSize={12}>
-                      {dayjs(token.createdAt).format("LLLL")}
+                      {dateFormatter(token.createdAt).format("LLLL")}
                     </Text>
                   </Td>
                   <Td>

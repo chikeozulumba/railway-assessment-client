@@ -11,7 +11,7 @@ const config = new HttpLink({
   uri,
 });
 
-const authentication = setContext((_, { headers, }) => {
+const authentication = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
@@ -24,6 +24,21 @@ const typeDefs = gql`
   input ConnectRailwayAccountDTO {
     name: String
     token: String!
+  }
+
+  input Repo {
+    fullRepoName: String
+    branch: String
+  }
+
+  input CreateNewRailwayProjectDTO {
+    tokenId: String
+    name: String
+    description: String
+    prDeploys: String
+    isPublic: String
+    defaultEnvironmentName: String
+    repo: Repo
   }
 `;
 

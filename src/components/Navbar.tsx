@@ -30,8 +30,14 @@ export function NavigationBar() {
       <Box bg={"#fff"} boxShadow="xs">
         <Container maxW="1024px" px={4}>
           <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-            <Link href={"/"} color={"#000"} fontWeight={800}>
-              Demo App
+            <Link
+              href={"/"}
+              textDecoration={"none"}
+              _hover={{ textDecoration: "none" }}
+              color={"#000"}
+              fontWeight={800}
+            >
+              RunThrough
             </Link>
 
             <Flex alignItems={"center"}>

@@ -18,9 +18,10 @@ type Props = {
   children?: React.ReactNode;
   isOpen: boolean;
   handleOnClose: () => void;
-  handleOnTrigger: (value: boolean) => void;
+  handleOnTrigger?: (value: boolean) => void;
   proceed?: () => void;
   buttonDisabled?: boolean;
+  proceedButtonText?: string;
 } & Partial<ModalProps>;
 
 export function ModalComponent({
@@ -31,6 +32,7 @@ export function ModalComponent({
   handleOnClose,
   proceed,
   buttonDisabled,
+  proceedButtonText,
   ...args
 }: Props) {
   return (
@@ -39,7 +41,9 @@ export function ModalComponent({
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            <h3>{title}</h3>
+            <Text as="h3" fontSize={{ base: "sm", sm: "large" }}>
+              {title}
+            </Text>
             {description && (
               <Text as={"h6"} fontSize={"sm"} fontWeight={300} opacity={"0.7"}>
                 {description}
@@ -62,7 +66,7 @@ export function ModalComponent({
               }}
               disabled={buttonDisabled}
             >
-              Proceed
+              {proceedButtonText || "Proceed"}
             </Button>
             <Button
               onClick={handleOnClose}

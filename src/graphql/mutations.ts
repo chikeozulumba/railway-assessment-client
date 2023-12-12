@@ -28,6 +28,25 @@ export const CONNECT_RAILWAY_ACCOUNT_MUTATION = gql`
   }
 `;
 
+export const CREATE_NEW_RAILWAY_PROJECT_MUTATION = gql`
+  mutation CreateNewRailwayProject($payload: CreateNewRailwayProjectDTO!) {
+    createNewRailwayProject(payload: $payload) {
+      id
+      # userId
+      # profileId
+      # railwayProjectId
+      # name
+      # description
+      # projectCreatedAt
+      # projectUpdatedAt
+      # prDeploys
+      # prForks
+      # createdAt
+      # updatedAt
+    }
+  }
+`;
+
 export const REMOVE_RAILWAY_TOKEN_MUTATION = gql`
   mutation RemoveRailwayToken($id: String!) {
     removeRailwayToken(id: $id) {

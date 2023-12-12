@@ -1,0 +1,1 @@
+export const NORMAL_TEXT_COLOR = "#393E46";

@@ -25,7 +25,7 @@ export default function AuthLayout({
         {user.data &&
           !railwayAccountConnected &&
           shouldHideTokenAlertBox && (
-            <Alert status="warning" fontSize={"small"} mt={4}>
+            <Alert status="warning" fontSize={"small"} mb={4}>
               <AlertIcon />
               <Text color={"#000000"}>
                 Connect your railway account via API secret token.

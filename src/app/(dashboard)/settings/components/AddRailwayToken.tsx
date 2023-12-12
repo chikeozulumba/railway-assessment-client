@@ -31,7 +31,6 @@ export const AddRailwayTokenComponent = (props: Props) => {
     setTokenState,
     nameState,
     tokenState,
-    buttonDisabled,
   } = props;
 
   return (
@@ -55,7 +54,7 @@ export const AddRailwayTokenComponent = (props: Props) => {
       isOpen={isOpen}
       handleOnClose={onClose}
       proceed={handleSubmit}
-      isCentered
+      closeOnOverlayClick={false}
     >
       <Stack spacing={4}>
         <VStack alignItems={"start"} spacing={-2}>
@@ -64,7 +63,7 @@ export const AddRailwayTokenComponent = (props: Props) => {
           </FormLabel>
           <Input
             placeholder="Token name (optional)"
-            size="md"
+            size="sm"
             defaultValue={nameState}
             onChange={(e) => setNameState(e.target.value)}
             _focusVisible={{ borderColor: "#000", borderWidth: 1.5 }}
@@ -77,7 +76,7 @@ export const AddRailwayTokenComponent = (props: Props) => {
           </FormLabel>
           <Input
             placeholder="API Secret token"
-            size="md"
+            size="sm"
             defaultValue={tokenState}
             onChange={(e) => setTokenState(e.target.value)}
             _focusVisible={{ borderColor: "#000", borderWidth: 1.5 }}
