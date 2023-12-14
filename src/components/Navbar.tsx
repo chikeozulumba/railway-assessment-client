@@ -15,7 +15,8 @@ import {
 } from "@chakra-ui/react";
 import { Link } from "@chakra-ui/next-js";
 import { useAuthStore } from "@/store/auth";
-import useFirebaseAuth from "@/hooks/useFirebaseAuth";
+import { useClerk } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 interface Props {
   children: React.ReactNode;
@@ -23,7 +24,8 @@ interface Props {
 
 export function NavigationBar() {
   const { state: user } = useAuthStore();
-  const { logout } = useFirebaseAuth();
+  const { signOut } = useClerk();
+  const router = useRouter();
 
   return (
     <>
@@ -55,16 +57,27 @@ export function NavigationBar() {
                   <MenuList alignItems={"center"}>
                     <MenuItem>
                       <Link
+                        href={"/profile"}
+                        width={"100%"}
+                        textDecoration={"none"}
+                        _hover={{ textDecoration: "none" }}
+                        fontSize={"small"}
+                      >
+                        Profile
+                      </Link>
+                    </MenuItem>
+                    <MenuItem>
+                      <Link
                         href={"/settings"}
                         width={"100%"}
                         textDecoration={"none"}
                         _hover={{ textDecoration: "none" }}
                         fontSize={"small"}
                       >
-                        Account Settings
+                        Settings
                       </Link>
                     </MenuItem>
-                    <MenuItem onClick={logout} fontSize={"small"}>
+                    <MenuItem onClick={() => signOut(() => router.push("/login"))} fontSize={"small"}>
                       Logout
                     </MenuItem>
                   </MenuList>

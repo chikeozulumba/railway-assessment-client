@@ -5,12 +5,19 @@ export const GET_PROFILE_AND_RAILWAY_TOKENS = gql`
     me {
       id
       fullName
-      email
-      provider
-      providerId
-      avatarUrl
     }
 
+    getRailwayTokens {
+      id
+      name
+      value
+      createdAt
+    }
+  }
+`;
+
+export const GET_RAILWAY_TOKENS = gql`
+  query {
     getRailwayTokens {
       id
       name
@@ -41,7 +48,6 @@ export const GET_RAILWAY_PROJECTS = gql`
     railwayProjects {
       id
       userId
-      profileId
       railwayProjectId
       name
       description

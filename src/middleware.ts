@@ -1,106 +1,50 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { parse as parseCookies } from "cookie";
-import { AUTH_NAVIGATION_LINKS_PATH } from "./constants/auth";
-import { NAVIGATION_LINKS_PATH } from "./constants/navigation";
-import { API_URL, FirebaseAuth } from "./config";
-import { graphQLAPI } from "./lib/api";
+import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
+import { apolloClient } from "./lib/client";
+import { AUTHORIZE_USER_MUTATION } from "./graphql/mutations";
+import { redirectToSignUp } from "@clerk/nextjs/server";
 
-const BASE_APP_PATH = process.env.NEXT_PUBLIC_CLIENT_URL;
+export default authMiddleware({
+  signInUrl: '/login',
+  publicRoutes: ["/login"],
+  async afterAuth(auth, req) {
+    try {
+      // Handle users who aren't authenticated
+      if (!auth.userId && !auth.isPublicRoute) {
+        return redirectToSignIn({ returnBackUrl: req.url });
+      }
 
-if (typeof API_URL !== "string" || !API_URL) {
-  throw new Error(`Please supply authorization endpoint`);
-}
+      const token = await auth.getToken();
 
-// Set the paths that don't require the user to be signed in
-const publicPaths = [
-  AUTH_NAVIGATION_LINKS_PATH.Login,
-  AUTH_NAVIGATION_LINKS_PATH.Register,
-];
+      if (!token) {
+        throw new Error('Invalid authorization token');
+      }
 
-// Set the paths that don't require the user to be signed in
-const authPaths = [AUTH_NAVIGATION_LINKS_PATH.Login];
+      const { data } = await apolloClient.mutate({
+        mutation: AUTHORIZE_USER_MUTATION, variables: { payload: { uid: auth.userId } }, context: {
+          headers: {
+            'x-auth-token': token,
+          }
+        }
+      });
 
-const isPublicPath = (path: string) => {
-  return publicPaths.find((x) =>
-    path.match(new RegExp(`^${x}$`.replace("*$", "($|/)")))
-  );
-};
+      if (typeof data?.authorize?.id !== 'string') {
+        throw redirectToSignUp({ returnBackUrl: req.url });
+      }
 
-const isAuthPath = (path: string) => {
-  return authPaths.find((x) =>
-    path.match(new RegExp(`^${x}$`.replace("*$", "($|/)")))
-  );
-};
+      // If the user is logged in and trying to access a protected route, allow them to access route
+      if (auth.userId && !auth.isPublicRoute) {
+        return NextResponse.next()
+      }
 
-const logoutAndRedirect = async (req: NextRequest) => {
-  const currentPath = new URL(req.url).pathname;
-  if (authPaths.includes(currentPath as AUTH_NAVIGATION_LINKS_PATH)) {
-    return NextResponse.next();
-  }
+      return NextResponse.next()
 
-  await FirebaseAuth.signOut();
-  const signInUrl = new URL(AUTH_NAVIGATION_LINKS_PATH.Login, BASE_APP_PATH);
-  if (!signInUrl.searchParams.get("redirect_url")) {
-    signInUrl.searchParams.set("redirect_url", req.url);
-  }
-
-  return NextResponse.redirect(signInUrl);
-};
-
-const handle = async (req: NextRequest, token?: string) => {
-  try {
-    if (!token) return await logoutAndRedirect(req);
-
-    const dashboardPath = new URL(NAVIGATION_LINKS_PATH.Home, BASE_APP_PATH);
-    const nextLocationPathname = req.nextUrl.pathname;
-
-    // Try and fetch user profile
-    const response = await graphQLAPI(
-      {
-        query: `
-            query {
-                me {
-                    id
-                    fullName
-                    email
-                    provider
-                    providerId
-                    avatarUrl
-                }
-                }
-                `,
-      },
-      token
-    );
-
-    const userHasProfileLoaded = typeof response.data?.me?.id === "string";
-
-    if (!userHasProfileLoaded) return await logoutAndRedirect(req);
-
-    if (
-      isPublicPath(nextLocationPathname) &&
-      isAuthPath(nextLocationPathname)
-    ) {
-      if (req.url === req.nextUrl.href) {
-        return NextResponse.redirect(dashboardPath);
-      } else NextResponse.redirect(req.url);
+    } catch (error) {
+      console.log((error as any)?.message);
     }
-    return NextResponse.next();
-  } catch (error) {
-    return await logoutAndRedirect(req);
   }
-};
-
-const AuthMiddleware = (request: NextRequest) => {
-  const cookies = request.headers.get("Cookie") ?? "";
-  const token = parseCookies(cookies)["firebaseToken"] ?? undefined;
-
-  return handle(request, token);
-};
+});
 
 export const config = {
-  matcher: "/((?!_next/image|_next/static|favicon.ico).*)",
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };
-
-export default AuthMiddleware;

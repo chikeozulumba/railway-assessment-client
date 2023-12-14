@@ -3,7 +3,7 @@
 import React from "react";
 import { CacheProvider } from "@chakra-ui/next-js";
 import { ChakraProvider } from "@chakra-ui/react";
-import { AuthUserProvider } from "@/providers/AuthUserProvider";
+import { ClerkProvider } from "@clerk/nextjs";
 import { ApolloGraphQLProvider } from "@/providers/ApolloGraphQLProvider";
 import { theme } from "@/theme";
 
@@ -12,7 +12,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
     <CacheProvider>
       <ChakraProvider theme={theme}>
         <ApolloGraphQLProvider>
-          <AuthUserProvider>{children}</AuthUserProvider>
+          <ClerkProvider>{children}</ClerkProvider>
         </ApolloGraphQLProvider>
       </ChakraProvider>
     </CacheProvider>

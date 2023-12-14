@@ -1,3 +1,4 @@
+import nookies from "nookies";
 import { ApolloClient, HttpLink, InMemoryCache, gql } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 
@@ -9,13 +10,13 @@ if (!uri) {
 
 const config = new HttpLink({
   uri,
+  credentials: "include",
 });
 
 const authentication = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
-      "x-auth-token": localStorage.getItem("firebaseToken") as string,
     },
   };
 });

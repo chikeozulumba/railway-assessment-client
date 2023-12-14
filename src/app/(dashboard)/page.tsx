@@ -3,20 +3,20 @@
 import { useMemo } from "react";
 import { HStack, Text, VStack, useDisclosure } from "@chakra-ui/react";
 import { useQuery } from "@apollo/client";
+import { useUser } from "@clerk/nextjs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useAuthStore } from "@/store/auth";
-import { DashboardProjects } from "./components/Projects";
 import { GET_RAILWAY_PROJECTS } from "@/graphql/queries";
+import { DashboardProjects } from "./components/Projects";
 import { AddNewServiceToProjectComponent } from "./components/AddNewServiceToProject";
 import { CreateNewProjectComponent } from "./components/CreateNewProject";
 
 import type { Project } from "@/@types/project";
 
 export default function Home() {
+  const auth = useUser();
   const { data, loading } = useQuery(GET_RAILWAY_PROJECTS);
   const projects: Project[] = useMemo(() => data?.railwayProjects || [], [data]);
 
-  const { state } = useAuthStore();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -85,7 +85,7 @@ export default function Home() {
               fontSize={{ base: "2xl", sm: "18px", md: "24px" }}
               fontWeight={600}
             >
-              Hi, {state.data?.fullName}
+              Hi, {auth.user?.firstName}
             </Text>
           </HStack>
 

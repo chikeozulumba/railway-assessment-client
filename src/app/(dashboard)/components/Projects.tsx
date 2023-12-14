@@ -19,6 +19,7 @@ import {
 import { FaCaretRight } from "react-icons/fa";
 import { usePathname, useRouter } from "next/navigation";
 import { Link } from "@chakra-ui/next-js";
+import { useUser } from "@clerk/nextjs";
 import { dateFormatter } from "@/utils/date";
 import { NORMAL_TEXT_COLOR } from "@/constants";
 
@@ -49,12 +50,12 @@ export const DashboardProjects = ({ projects }: Props) => {
       <VStack width={"100%"}>
         <HStack w={'100%'}>
           <Box width={"100%"}>
-            <Text fontSize={{ base: "16px" }} fontWeight={500}>
+            <Text fontSize={{ base: "16px" }} fontWeight={600}>
               Your Projects
             </Text>
-            <Text fontSize={{ base: "14px" }} fontWeight={300} opacity={"0.7"}>
+            <Text fontSize={{ base: "14px" }} fontWeight={400}>
               Effortlessly streamline and elevate your projects performance on
-              Railway using <strong>RunThrough</strong>.
+              Railway using RunThrough.
             </Text>
           </Box>
 

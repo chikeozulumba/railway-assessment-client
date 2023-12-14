@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ApolloError, useMutation } from "@apollo/client";
+import { ApolloError, useMutation, useQuery } from "@apollo/client";
 import {
   HStack,
   Text,
@@ -29,13 +29,13 @@ import {
 } from "@/graphql/mutations";
 import { Toast } from "@/lib/toast";
 import { useAuthStore } from "@/store/auth";
-import { useTokenStore } from "@/store/token";
-import { GET_PROFILE_AND_RAILWAY_TOKENS } from "@/graphql/queries";
+import { GET_PROFILE_AND_RAILWAY_TOKENS, GET_RAILWAY_TOKENS } from "@/graphql/queries";
 import { AddRailwayTokenComponent } from "./components/AddRailwayToken";
 import { dateFormatter } from "@/utils/date";
+import { RailwayToken } from "@/@types/token";
 
 export default function Settings() {
-  const { state: railwayTokens } = useTokenStore();
+  const { data } = useQuery<{getRailwayTokens: RailwayToken[]}>(GET_RAILWAY_TOKENS);
   const [connectRailwayAccount, { loading }] = useMutation(
     CONNECT_RAILWAY_ACCOUNT_MUTATION,
     {
@@ -149,10 +149,10 @@ export default function Settings() {
       </HStack>
 
       <Box textAlign={"left"} width={"100%"}>
-        <Text fontSize={{ base: "16px" }} fontWeight={500}>
+        <Text fontSize={{ base: "16px" }} fontWeight={600}>
           Manage Railway API Tokens
         </Text>
-        <Text fontSize={{ base: "14px" }} fontWeight={300} opacity={"0.7"}>
+        <Text fontSize={{ base: "14px" }} fontWeight={400}>
           Programmatically access your Railway account using these API
           tokens/secrets.
           <Link
@@ -166,7 +166,7 @@ export default function Settings() {
       </Box>
 
       {/* Display tokens */}
-      {railwayTokens.length > 0 && (
+      {(data?.getRailwayTokens?.length || 0) > 0 && (
         <TableContainer width={"100%"} bg={"white"} borderRadius={"12px"}>
           <Table variant="simple" size={"md"}>
             <Thead>
@@ -178,7 +178,7 @@ export default function Settings() {
               </Tr>
             </Thead>
             <Tbody>
-              {railwayTokens.map((token, i) => (
+              {data?.getRailwayTokens.map((token, i) => (
                 <Tr key={token.id + i}>
                   <Td fontSize={14}>{token.name}</Td>
                   <Td>
