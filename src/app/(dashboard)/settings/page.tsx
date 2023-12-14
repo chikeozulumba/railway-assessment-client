@@ -28,14 +28,13 @@ import {
   REMOVE_RAILWAY_TOKEN_MUTATION,
 } from "@/graphql/mutations";
 import { Toast } from "@/lib/toast";
-import { useAuthStore } from "@/store/auth";
 import { GET_PROFILE_AND_RAILWAY_TOKENS, GET_RAILWAY_TOKENS } from "@/graphql/queries";
 import { AddRailwayTokenComponent } from "./components/AddRailwayToken";
 import { dateFormatter } from "@/utils/date";
 import { RailwayToken } from "@/@types/token";
 
 export default function Settings() {
-  const { data } = useQuery<{getRailwayTokens: RailwayToken[]}>(GET_RAILWAY_TOKENS);
+  const { data } = useQuery<{ getRailwayTokens: RailwayToken[] }>(GET_RAILWAY_TOKENS);
   const [connectRailwayAccount, { loading }] = useMutation(
     CONNECT_RAILWAY_ACCOUNT_MUTATION,
     {
@@ -50,7 +49,6 @@ export default function Settings() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { state: authState, setAuthState } = useAuthStore();
 
   const shouldBeOpen = searchParams.get("mode") === "token";
   const [toggleModal, setToggleModal] = useState(shouldBeOpen);
@@ -68,6 +66,7 @@ export default function Settings() {
 
   const [tokenState, setTokenState] = useState<string | undefined>();
   const [nameState, setNameState] = useState<string | undefined>();
+  const [defaultTokenState, setDefaultTokenTokenState] = useState<boolean>((data?.getRailwayTokens?.length || 0) < 1);
 
   async function handleSubmit() {
     if (loading) return;
@@ -77,13 +76,8 @@ export default function Settings() {
         type: "error",
       });
     try {
-      const response = await connectRailwayAccount({
-        variables: { payload: { token: tokenState, name: nameState } },
-      });
-
-      setAuthState({
-        ...authState,
-        data: { ...authState.data, ...response.data.connectRailwayAccount },
+      await connectRailwayAccount({
+        variables: { payload: { token: tokenState, name: nameState, isDefault: defaultTokenState } },
       });
 
       router.replace(pathname);
@@ -108,7 +102,7 @@ export default function Settings() {
     try {
       const response = await removeRailwayToken({ variables: { id } });
       if (response.data.removeRailwayToken?.status === "success") {
-        Toast(`Railway token (${tokenName}) removed from RunThrough.`, {
+        Toast(`Railway token (${tokenName}) removed.`, {
           type: "success",
           time: 4,
         });
@@ -218,6 +212,8 @@ export default function Settings() {
         handleSubmit={handleSubmit}
         setNameState={setNameState}
         setTokenState={setTokenState}
+        defaultTokenState={defaultTokenState}
+        setDefaultTokenTokenState={setDefaultTokenTokenState}
         nameState={nameState}
         tokenState={tokenState}
         isOpen={isOpen}

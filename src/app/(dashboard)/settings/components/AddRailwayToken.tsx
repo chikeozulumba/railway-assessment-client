@@ -5,6 +5,8 @@ import {
   Stack,
   Text,
   useDisclosure,
+  FormControl,
+  Switch,
 } from "@chakra-ui/react";
 import { Link } from "@chakra-ui/next-js";
 import { ModalComponent } from "@/components/Modal";
@@ -19,6 +21,8 @@ type Props = {
   tokenState: string | undefined;
   isOpen: boolean;
   buttonDisabled?: boolean;
+  defaultTokenState?: boolean;
+  setDefaultTokenTokenState?: (value: boolean) => void;
 };
 
 export const AddRailwayTokenComponent = (props: Props) => {
@@ -29,6 +33,8 @@ export const AddRailwayTokenComponent = (props: Props) => {
     handleSubmit,
     setNameState,
     setTokenState,
+    defaultTokenState,
+    setDefaultTokenTokenState,
     nameState,
     tokenState,
   } = props;
@@ -81,6 +87,20 @@ export const AddRailwayTokenComponent = (props: Props) => {
             onChange={(e) => setTokenState(e.target.value)}
             _focusVisible={{ borderColor: "#000", borderWidth: 1.5 }}
           />
+        </VStack>
+
+        <VStack alignItems={"start"} spacing={-2}>
+          <FormControl display="flex" alignItems="center">
+            <FormLabel htmlFor="isPublic" fontSize={"small"} mb="0">
+              Make this the default API token?
+            </FormLabel>
+            <Switch
+              onChange={(e) => setDefaultTokenTokenState?.(e.target.checked)}
+              defaultChecked={Boolean(defaultTokenState)}
+              id="isDefault"
+              size={"sm"}
+            />
+          </FormControl>
         </VStack>
       </Stack>
     </ModalComponent>

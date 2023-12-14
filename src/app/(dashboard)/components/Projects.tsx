@@ -15,6 +15,8 @@ import {
   ListItem,
   Button,
   VStack,
+  Tooltip,
+  Divider,
 } from "@chakra-ui/react";
 import { FaCaretRight } from "react-icons/fa";
 import { usePathname, useRouter } from "next/navigation";
@@ -24,6 +26,7 @@ import { dateFormatter } from "@/utils/date";
 import { NORMAL_TEXT_COLOR } from "@/constants";
 
 import type { Project } from "@/@types/project";
+import { DocumentPlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 type Props = {
   projects: Project[];
@@ -35,7 +38,7 @@ function defineGridSize(size: string, length: number = 0) {
     case "sm":
       return 1;
     default:
-      if (length  && length >= 3) return 3
+      if (length && length >= 3) return 3
       return 2;
   }
 }
@@ -144,33 +147,44 @@ export const DashboardProjects = ({ projects }: Props) => {
                           </Text>
                         </Box>
                       </AccordionButton>
-                      <AccordionPanel pb={2} cursor={"pointer"}>
+                      <AccordionPanel position={'relative'} pb={2} cursor={"pointer"}>
                         {servicesLength > 0 && (
                           <List>
                             {services.map((service, i) => {
+                              const instancesLength = service.instances?.length || 0;
+
                               return (
-                                <ListItem key={service.id}>
+                                <ListItem key={service.id} display={'flex'} justifyContent={'space-between'}>
                                   <Link
                                     href={`?action=view-service&serviceId=${service.id}&projectId=${project.id}`}
                                     fontSize={"12px"}
                                     color={NORMAL_TEXT_COLOR}
                                     textTransform={"capitalize"}
                                   >
-                                    {service.name}
+                                    <strong>{service.name}</strong>
                                   </Link>
+                                  <Text fontSize={"10px"}
+                                    color={NORMAL_TEXT_COLOR} textTransform={'lowercase'}>{instancesLength} instance{`${instancesLength > 1 ? 's' : ''}`}</Text>
                                 </ListItem>
                               );
                             })}
                           </List>
                         )}
-                        <Link
-                          href={`?action=new-service&projectId=${project.id}`}
-                          mt={1}
-                          fontSize={"12px"}
-                          color={NORMAL_TEXT_COLOR}
-                        >
-                          Add new service
-                        </Link>
+
+                        <Divider my={2} />
+
+                        <HStack style={{ bottom: 8 }} gap={2} w={'100%'}>
+                          <Tooltip size={'small'} hasArrow fontSize={'12px'} label='New service'>
+                            <Link href={`?action=new-service&projectId=${project.id}`} opacity={'0.5'} _hover={{ bg: 'transparent', color: 'black', opacity: '1' }} width={'fit-content'} height={'fit-content'} variant={'ghost'} padding={0}>
+                              <DocumentPlusIcon height={15} />
+                            </Link>
+                          </Tooltip>
+                          <Tooltip size={'small'} hasArrow fontSize={'12px'} label='Remove project'>
+                            <Button opacity={'0.5'} display={'block'} _hover={{ bg: 'transparent', color: 'red', opacity: '1' }} width={'fit-content'} height={'fit-content'} variant={'ghost'} padding={0}>
+                              <TrashIcon height={15} />
+                            </Button>
+                          </Tooltip>
+                        </HStack>
                       </AccordionPanel>
                     </>
                   );

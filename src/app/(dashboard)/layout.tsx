@@ -16,7 +16,9 @@ export default function AuthLayout({
   const pathname = usePathname();
   const auth = useUser();
 
-  const { data, loading } = useQuery(GET_PROFILE_AND_RAILWAY_TOKENS);
+  const { data, loading } = useQuery(GET_PROFILE_AND_RAILWAY_TOKENS, {
+    pollInterval: 4000,
+  });
   
   const shouldHideTokenAlertBox = !["/settings"].includes(pathname);
   const railwayAccountConnected = data?.getRailwayTokens?.length > 0;

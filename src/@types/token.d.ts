@@ -17,6 +17,7 @@ export type RailwayToken = {
   id: string;
   name: string;
   value: string;
+  isDefault?: boolean;
   createdAt: string;
 };
 

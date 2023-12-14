@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useMemo, useState } from "react";
 import {
   Divider,
   FormControl,
@@ -21,11 +21,13 @@ import { useTokenStore } from "@/store/token";
 import { useAuthStore } from "@/store/auth";
 import { Toast } from "@/lib/toast";
 import {
+  GET_PROFILE_AND_RAILWAY_TOKENS,
   GET_RAILWAY_PROJECTS,
   USER_GITHUB_REPOSITORIES,
   USER_GITHUB_REPOSITORY_WITH_BRANCHES,
 } from "@/graphql/queries";
 import { CREATE_NEW_RAILWAY_PROJECT_MUTATION } from "@/graphql/mutations";
+import { RailwayToken } from "@/@types/token";
 
 type Props = {
   onClose: () => void;
@@ -51,9 +53,6 @@ const initialFormState = {
 export const CreateNewProjectComponent = (props: Props) => {
   const { data: repositories } = useQuery(USER_GITHUB_REPOSITORIES);
 
-  const { state: tokens } = useTokenStore();
-  const { state: authState } = useAuthStore();
-
   const { isOpen, onClose } = props;
   const {
     handleSubmit,
@@ -66,19 +65,21 @@ export const CreateNewProjectComponent = (props: Props) => {
     defaultValues: initialFormState,
   });
 
+  const { data } = useQuery(GET_PROFILE_AND_RAILWAY_TOKENS);
+
   const { refetch } = useQuery(USER_GITHUB_REPOSITORY_WITH_BRANCHES, {
     skip: true,
   });
+
+  const tokens: RailwayToken[] = useMemo(() => (data?.getRailwayTokens || [])
+    .sort((a: RailwayToken, b: RailwayToken) => Number(b.isDefault) - Number(a.isDefault)), [])
 
   const [branchesState, setBranchesState] = useState([]);
   const [branchesFetchingState, setBranchesFetchingState] = useState(false);
 
   const tokenIdValue = watch("tokenId");
 
-  const showTokenInput = !authState.data?.activeRailwayToken;
-
   const tokenIdIsPresent =
-    !showTokenInput ||
     (typeof tokenIdValue === "string" && String(tokenIdValue).length > 0);
 
   const handleRepositoryOnChange = async (
@@ -112,15 +113,15 @@ export const CreateNewProjectComponent = (props: Props) => {
 
   const createNewProject = async (payload: typeof initialFormState) => {
     try {
-      const { data } = await createNewRailwayProject({
+      await createNewRailwayProject({
         variables: { payload },
       });
+
       props.onClose();
       Toast("Railway project created successfully.", {
         type: "success",
         time: 5,
       });
-      console.log(data);
     } catch (error) {
       if (error instanceof ApolloError) {
         Toast("Error while creating Railway project", {
@@ -172,7 +173,7 @@ export const CreateNewProjectComponent = (props: Props) => {
     >
       <form>
         <VStack spacing={4}>
-          {showTokenInput && (
+          {tokens.length > 0 && (
             <FormControl isInvalid={Boolean(errors.tokenId)}>
               <FormLabel htmlFor="tokenId" fontSize={"small"} mb={1}>
                 Choose API token
@@ -200,58 +201,9 @@ export const CreateNewProjectComponent = (props: Props) => {
 
           {tokenIdIsPresent && (
             <>
-              <Divider />
-
-              <FormControl isInvalid={Boolean(errors.name)} isRequired>
-                <FormLabel htmlFor="name" fontSize={"small"} mb={1}>
-                  Project name
-                </FormLabel>
-                <Input
-                  size={"sm"}
-                  id="name"
-                  placeholder="Enter project name"
-                  {...register("name", {
-                    required: "This field is required",
-                  })}
-                  _focusVisible={{
-                    borderColor: Boolean(errors.name) ? "red" : "#000",
-                    borderWidth: Boolean(errors.name) ? 1 : 1.5,
-                  }}
-                />
-                <FormErrorMessage mt={1} fontWeight={500} fontSize={"xs"}>
-                  <Text>{errors.name && String(errors.name.message)}</Text>
-                </FormErrorMessage>
-              </FormControl>
-
-              <FormControl isInvalid={Boolean(errors.description)}>
-                <FormLabel htmlFor="description" fontSize={"small"} mb={1}>
-                  Project description
-                </FormLabel>
-                <Textarea
-                  size={"sm"}
-                  id="description"
-                  placeholder="Enter project description"
-                  resize={"none"}
-                  _focusVisible={{
-                    borderColor: Boolean(errors.description) ? "red" : "#000",
-                    borderWidth: Boolean(errors.description) ? 1 : 1.5,
-                  }}
-                  rows={2}
-                  {...register("description", {
-                    maxLength: {
-                      value: 200,
-                      message: "Maximum of 250 characters for this field",
-                    },
-                  })}
-                />
-                <FormErrorMessage mt={1} fontWeight={500} fontSize={"xs"}>
-                  {errors.description && String(errors.description.message)}
-                </FormErrorMessage>
-              </FormControl>
-
               <FormControl isInvalid={Boolean(errors.repo?.fullRepoName)}>
                 <FormLabel htmlFor="fullRepoName" fontSize={"small"} mb={1}>
-                  Instantiate repository
+                  Initialize with repository
                 </FormLabel>
                 <Select
                   size={"sm"}
@@ -315,7 +267,7 @@ export const CreateNewProjectComponent = (props: Props) => {
                   fontSize={"small"}
                   mb={1}
                 >
-                  Environment
+                  Default Environment
                 </FormLabel>
                 <Input
                   size={"sm"}
