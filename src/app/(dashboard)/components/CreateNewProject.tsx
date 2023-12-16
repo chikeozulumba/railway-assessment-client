@@ -2,7 +2,6 @@
 
 import { ChangeEvent, useMemo, useState } from "react";
 import {
-  Divider,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -11,14 +10,11 @@ import {
   Select,
   Switch,
   Text,
-  Textarea,
   VStack,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { ApolloError, useMutation, useQuery } from "@apollo/client";
 import { ModalComponent } from "@/components/Modal";
-import { useTokenStore } from "@/store/token";
-import { useAuthStore } from "@/store/auth";
 import { Toast } from "@/lib/toast";
 import {
   GET_PROFILE_AND_RAILWAY_TOKENS,
@@ -51,24 +47,25 @@ const initialFormState = {
 };
 
 export const CreateNewProjectComponent = (props: Props) => {
-  const { data: repositories } = useQuery(USER_GITHUB_REPOSITORIES);
+  const { data: repositories, refetch: refetchRepositories } = useQuery(USER_GITHUB_REPOSITORIES, {
+    skip: true,
+  });
+
+  const { data } = useQuery(GET_PROFILE_AND_RAILWAY_TOKENS);
+  const { refetch } = useQuery(USER_GITHUB_REPOSITORY_WITH_BRANCHES, {
+    skip: true,
+  });
 
   const { isOpen, onClose } = props;
   const {
     handleSubmit,
-    watch,
     register,
     setValue,
     getValues,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: initialFormState,
-  });
-
-  const { data } = useQuery(GET_PROFILE_AND_RAILWAY_TOKENS);
-
-  const { refetch } = useQuery(USER_GITHUB_REPOSITORY_WITH_BRANCHES, {
-    skip: true,
   });
 
   const tokens: RailwayToken[] = useMemo(() => (data?.getRailwayTokens || [])
@@ -77,24 +74,38 @@ export const CreateNewProjectComponent = (props: Props) => {
   const [branchesState, setBranchesState] = useState([]);
   const [branchesFetchingState, setBranchesFetchingState] = useState(false);
 
-  const tokenIdValue = watch("tokenId");
+  const [fetchedRepos, setFetchedRepos] = useState('idle')
+  const [repos, setRepos] = useState<any[]>([])
 
-  const tokenIdIsPresent =
-    (typeof tokenIdValue === "string" && String(tokenIdValue).length > 0);
+  const handleTokenSelected = async (evt: ChangeEvent<HTMLInputElement>) => {
+    try {
+      const tokenId = evt.target.value;
+      if (!tokenId) return;
+
+      const { data } = await refetchRepositories({ tokenId });
+      setFetchedRepos('fetched');
+      setRepos(data?.fetchUserGithubRepositories || []);
+    } catch (error) {
+      console.log(error);
+      setFetchedRepos('error');
+      Toast('Failed to retrieve project repositories.', { time: 4 });
+    }
+  }
 
   const handleRepositoryOnChange = async (
     evt: ChangeEvent<HTMLSelectElement>
   ) => {
     try {
       const tokenId = getValues("tokenId");
-      const repoId = getValues("repo.fullRepoName");
-      if (!repoId || !tokenId) return;
+      const repo = getValues("repo.fullRepoName");
+      console.log(repo, tokenId)
+      if (!repo || !tokenId) return;
 
       setBranchesState([]);
       setBranchesFetchingState(true);
       setValue("repo.branch", undefined);
 
-      const { data } = await refetch({ tokenId, repoId });
+      const { data } = await refetch({ tokenId, repo });
       setBranchesState(data?.fetchUserGithubRepositoryBranches || []);
     } catch (error) {
       Toast("Failed to retrieve repository branches.", {
@@ -117,6 +128,7 @@ export const CreateNewProjectComponent = (props: Props) => {
         variables: { payload },
       });
 
+      reset();
       props.onClose();
       Toast("Railway project created successfully.", {
         type: "success",
@@ -134,20 +146,21 @@ export const CreateNewProjectComponent = (props: Props) => {
   };
 
   const collectFormData = (data: typeof initialFormState) => {
-    const repoId = data.repo.fullRepoName;
+    const repo = data.repo.fullRepoName;
     const branch = data.repo.branch;
 
-    if (typeof repoId === "string") {
-      const findRepo = repositories?.fetchUserGithubRepositories?.find(
-        (r: any) => r.id === repoId
+    if (typeof repo === "string") {
+      const findRepo = repos?.find(
+        (r: any) => r.id === repo
       );
 
-      if (!findRepo) return;
-      data.repo.fullRepoName = findRepo.fullName;
+      if (findRepo) {
+        data.repo.fullRepoName = findRepo.fullName;
 
-      if (typeof branch !== "string" || branch === "") {
-        data.repo.branch = findRepo.defaultBranch;
-      }
+        if (typeof branch !== "string" || branch === "") {
+          data.repo.branch = findRepo.defaultBranch;
+        }
+      };
     }
 
     createNewProject(data);
@@ -165,7 +178,10 @@ export const CreateNewProjectComponent = (props: Props) => {
         </Text>
       }
       isOpen={isOpen}
-      handleOnClose={onClose}
+      handleOnClose={() => {
+        onClose();
+        reset();
+      }}
       proceed={handleSubmit(collectFormData)}
       proceedButtonText={formIsProcessing ? "Please wait..." : "Create"}
       buttonDisabled={formIsProcessing}
@@ -185,7 +201,7 @@ export const CreateNewProjectComponent = (props: Props) => {
                   borderWidth: Boolean(errors.tokenId) ? 1 : 1.5,
                 }}
                 placeholder="Choose"
-                {...register("tokenId", { onChange: handleRepositoryOnChange })}
+                {...register("tokenId", { onChange: handleTokenSelected })}
               >
                 {tokens.map((token) => (
                   <option key={token.id} value={token.id}>
@@ -199,7 +215,7 @@ export const CreateNewProjectComponent = (props: Props) => {
             </FormControl>
           )}
 
-          {tokenIdIsPresent && (
+          {fetchedRepos === 'fetched' && repos.length > 0 && (
             <>
               <FormControl isInvalid={Boolean(errors.repo?.fullRepoName)}>
                 <FormLabel htmlFor="fullRepoName" fontSize={"small"} mb={1}>
@@ -218,11 +234,10 @@ export const CreateNewProjectComponent = (props: Props) => {
                     onChange: handleRepositoryOnChange,
                   })}
                 >
-                  {repositories?.fetchUserGithubRepositories?.map(
+                  {repos.map(
                     (repo: any) => (
-                      <option key={repo.id} value={repo.id}>
+                      <option key={repo.id} value={repo.fullName}>
                         {repo.fullName}
-                        {repo.isPrivate ? " - private" : ""}
                       </option>
                     )
                   )}

@@ -148,7 +148,7 @@ export const DashboardProjects = ({ projects }: Props) => {
                         </Box>
                       </AccordionButton>
                       <AccordionPanel position={'relative'} pb={2} cursor={"pointer"}>
-                        {servicesLength > 0 && (
+                        {servicesLength > 0 ? (
                           <List>
                             {services.map((service, i) => {
                               const instancesLength = service.instances?.length || 0;
@@ -169,7 +169,7 @@ export const DashboardProjects = ({ projects }: Props) => {
                               );
                             })}
                           </List>
-                        )}
+                        ) : <Text w={'100%'} textAlign={'center'} fontSize={'12px'} my={1}>No services available</Text>}
 
                         <Divider my={2} />
 

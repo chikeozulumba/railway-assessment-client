@@ -4,6 +4,7 @@ export type Project = {
   id: string;
   userId: string;
   profileId: string;
+  tokenId: string;
   railwayProjectId: string;
   name: string | null;
   description: string | null;

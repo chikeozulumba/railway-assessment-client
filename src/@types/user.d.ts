@@ -7,7 +7,7 @@ export type User = {
   avatarUrl: string | undefined;
   status: string;
   railwayAccountStatus: string;
-  activeRailwayToken: string | null;
+  defaultRailwayToken: string | null;
   createdAt: string;
   updatedAt: string;
 };

@@ -6,7 +6,9 @@ export const GET_PROFILE_AND_RAILWAY_TOKENS = gql`
       id
       uid
       fullName
-      activeRailwayToken
+      defaultRailwayToken {
+        id
+      }
     }
 
     getRailwayTokens {
@@ -30,8 +32,8 @@ export const GET_RAILWAY_TOKENS = gql`
 `;
 
 export const USER_GITHUB_REPOSITORIES = gql`
-  query GetUserGithubRepositories {
-    fetchUserGithubRepositories {
+  query GetUserGithubRepositories($tokenId: String) {
+    fetchUserGithubRepositories (tokenId: $tokenId) {
       id
       fullName
       defaultBranch
@@ -40,8 +42,8 @@ export const USER_GITHUB_REPOSITORIES = gql`
 `;
 
 export const USER_GITHUB_REPOSITORY_WITH_BRANCHES = gql`
-  query GetUserGithubRepositoryBranches($repoId: String!, $tokenId: String) {
-    fetchUserGithubRepositoryBranches(tokenId: $tokenId, repoId: $repoId) 
+  query GetUserGithubRepositoryBranches($repo: String!, $tokenId: String) {
+    fetchUserGithubRepositoryBranches(tokenId: $tokenId, repo: $repo) 
   }
 `;
 
@@ -50,6 +52,7 @@ export const GET_RAILWAY_PROJECTS = gql`
     railwayProjects {
       id
       userId
+      tokenId
       railwayProjectId
       name
       description

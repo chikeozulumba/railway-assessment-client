@@ -14,7 +14,9 @@ import type { Project } from "@/@types/project";
 
 export default function Home() {
   const auth = useUser();
-  const { data, loading } = useQuery(GET_RAILWAY_PROJECTS, { pollInterval: 5000 });
+  const { data, loading } = useQuery(GET_RAILWAY_PROJECTS, { 
+    // pollInterval: 5000
+   });
   const projects: Project[] = useMemo(() => data?.railwayProjects || [], [data]);
 
   const searchParams = useSearchParams();

@@ -23,17 +23,14 @@ export const CREATE_NEW_RAILWAY_PROJECT_MUTATION = gql`
   mutation CreateNewRailwayProject($payload: CreateNewRailwayProjectDTO!) {
     createNewRailwayProject(payload: $payload) {
       id
-      # userId
-      # profileId
-      # railwayProjectId
-      # name
-      # description
-      # projectCreatedAt
-      # projectUpdatedAt
-      # prDeploys
-      # prForks
-      # createdAt
-      # updatedAt
+    }
+  }
+`;
+
+export const CREATE_NEW_RAILWAY_SERVICE_MUTATION = gql`
+  mutation CreateNewRailwayProjectService($payload: CreateNewRailwayProjectServiceDTO!) {
+    createNewRailwayProjectService(payload: $payload) {
+      id
     }
   }
 `;

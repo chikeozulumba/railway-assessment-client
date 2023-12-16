@@ -17,7 +17,7 @@ export default function AuthLayout({
   const auth = useUser();
 
   const { data, loading } = useQuery(GET_PROFILE_AND_RAILWAY_TOKENS, {
-    pollInterval: 4000,
+    // pollInterval: 4000,
   });
   
   const shouldHideTokenAlertBox = !["/settings"].includes(pathname);
