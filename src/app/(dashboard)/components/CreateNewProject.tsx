@@ -27,7 +27,6 @@ import { RailwayToken } from "@/@types/token";
 
 type Props = {
   onClose: () => void;
-  handleSubmit: (data?: any) => void;
   isOpen: boolean;
   buttonDisabled?: boolean;
   modalProps?: Partial<ModalProps>;

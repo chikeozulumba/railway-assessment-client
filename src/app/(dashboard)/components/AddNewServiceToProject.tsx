@@ -1,10 +1,10 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useMemo, useState } from "react";
 import { ApolloError, useMutation, useQuery } from "@apollo/client";
 import { FormControl, FormErrorMessage, FormLabel, Input, ModalProps, Select, Text, VStack } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { ModalComponent } from "@/components/Modal";
 import { Project } from "@/@types/project";
-import { GET_RAILWAY_PROJECTS, USER_GITHUB_REPOSITORIES, USER_GITHUB_REPOSITORY_WITH_BRANCHES } from "@/graphql/queries";
+import { GET_RAILWAY_PROJECT, GET_RAILWAY_PROJECTS, USER_GITHUB_REPOSITORIES, USER_GITHUB_REPOSITORY_WITH_BRANCHES } from "@/graphql/queries";
 import { Toast } from "@/lib/toast";
 import { useSearchParams } from "next/navigation";
 import { CREATE_NEW_RAILWAY_SERVICE_MUTATION } from "@/graphql/mutations";
@@ -12,7 +12,6 @@ import { EnvEditor } from "./EnvEditor";
 
 type Props = {
   onClose: () => void;
-  handleSubmit: () => void;
   isOpen: boolean;
   buttonDisabled?: boolean;
   project: Project | undefined;
@@ -38,9 +37,21 @@ export const AddNewServiceToProjectComponent = (props: Props) => {
     skip: true,
   });
 
+  const refetchQueriesAfterNewServiceAdded = useMemo(() => {
+    let queries: any[] = [
+      { query: GET_RAILWAY_PROJECTS },
+    ];
+
+    if (project) {
+      queries = [...queries, { query: GET_RAILWAY_PROJECT, variables: { projectId: project.id } }]
+    }
+
+    return queries;
+  }, [])
+
   const [addNewRailwayProjectService, { loading: addNewRailwayProjectServiceLoading }] =
     useMutation(CREATE_NEW_RAILWAY_SERVICE_MUTATION, {
-      refetchQueries: [{ query: GET_RAILWAY_PROJECTS }],
+      refetchQueries: refetchQueriesAfterNewServiceAdded,
     });
 
   const [branchesState, setBranchesState] = useState([]);

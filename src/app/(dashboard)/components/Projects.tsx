@@ -21,7 +21,6 @@ import {
 import { FaCaretRight } from "react-icons/fa";
 import { usePathname, useRouter } from "next/navigation";
 import { Link } from "@chakra-ui/next-js";
-import { useUser } from "@clerk/nextjs";
 import { dateFormatter } from "@/utils/date";
 import { NORMAL_TEXT_COLOR } from "@/constants";
 
@@ -116,13 +115,14 @@ export const DashboardProjects = ({ projects }: Props) => {
                       <AccordionButton _hover={{ bg: "transparent" }}>
                         <Box as="div" flex="1" textAlign="left">
                           <HStack>
-                            <Text
+                            <Link
+                              href={`/projects/${project.id}`}
                               fontWeight={600}
                               fontSize={{ base: "md", md: "lg" }}
                               textTransform={"capitalize"}
                             >
                               {project.name}
-                            </Text>
+                            </Link>
                             {(servicesLength || 0) >= 1 && (
                               <>
                                 <Spacer />
@@ -180,7 +180,7 @@ export const DashboardProjects = ({ projects }: Props) => {
                             </Link>
                           </Tooltip>
                           <Tooltip size={'small'} hasArrow fontSize={'12px'} label='Remove project'>
-                            <Button opacity={'0.5'} display={'block'} _hover={{ bg: 'transparent', color: 'red', opacity: '1' }} width={'fit-content'} height={'fit-content'} variant={'ghost'} padding={0}>
+                            <Button onClick={() => router.push(`?action=delete-project&projectId=${project.id}`)} opacity={'0.5'} display={'block'} _hover={{ bg: 'transparent', color: 'red', opacity: '1' }} width={'fit-content'} height={'fit-content'} variant={'ghost'} padding={0}>
                               <TrashIcon height={15} />
                             </Button>
                           </Tooltip>

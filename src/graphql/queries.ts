@@ -86,3 +86,43 @@ export const GET_RAILWAY_PROJECTS = gql`
     }
   }
 `;
+
+export const GET_RAILWAY_PROJECT = gql`
+  query ($projectId: String!) {
+    getRailwayProject(projectId: $projectId) {
+      id
+      userId
+      tokenId
+      railwayProjectId
+      name
+      description
+      projectCreatedAt
+      projectUpdatedAt
+      prDeploys
+      prForks
+      createdAt
+      updatedAt
+
+      services {
+        id
+        projectId
+        railwayServiceId
+        name
+        serviceCreatedAt
+        serviceUpdatedAt
+        instances {
+          id
+          railwayServiceInstanceId
+          builder
+          buildCommand
+          sourceImage
+          sourceRepo
+          sourceTemplateName
+          sourceTemplateSource
+          startCommand
+          numReplicas
+        }
+      }
+    }
+  }
+`;

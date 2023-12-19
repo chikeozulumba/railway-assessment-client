@@ -29,7 +29,7 @@ export default authMiddleware({
       });
 
       if (typeof data?.authorize?.id !== 'string') {
-        throw redirectToSignUp({ returnBackUrl: req.url });
+        return redirectToSignUp({ returnBackUrl: req.url });
       }
 
       // If the user is logged in and trying to access a protected route, allow them to access route

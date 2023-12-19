@@ -19,6 +19,12 @@ export const CONNECT_RAILWAY_ACCOUNT_MUTATION = gql`
   }
 `;
 
+export const DELETE_RAILWAY_PROJECT_MUTATION = gql`
+  mutation DeleteRailwayProject($id: String!) {
+    deleteRailwayProject(id: $id)
+  }
+`;
+
 export const CREATE_NEW_RAILWAY_PROJECT_MUTATION = gql`
   mutation CreateNewRailwayProject($payload: CreateNewRailwayProjectDTO!) {
     createNewRailwayProject(payload: $payload) {
