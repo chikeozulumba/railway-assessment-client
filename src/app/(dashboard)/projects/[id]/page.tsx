@@ -1,10 +1,10 @@
 'use client';
-import { Box, Button, HStack, Link, Spacer, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack } from "@chakra-ui/react";
 import { notFound, useParams, usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@apollo/client";
+import { Box, Button, HStack, Spacer, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack } from "@chakra-ui/react";
+import { Link } from "@chakra-ui/next-js";
 import { GET_RAILWAY_PROJECT } from "@/graphql/queries";
 import { ProjectBreadCrumbs } from "../components/Breadcrumbs";
-import { ErrorComponent } from "@/components/ErrorComponent";
 import { dateFormatter } from "@/utils/date";
 import type { Project } from "@/@types/project";
 
@@ -23,7 +23,7 @@ export default function ViewProjectsPage() {
   const servicesLength = services.length;
 
   if (error && !loading) {
-    return notFound()
+    return notFound();
   }
 
   return !loading && <>
@@ -85,7 +85,7 @@ export default function ViewProjectsPage() {
                 _hover={{
                   background: "red.200",
                 }}
-              // onClick={() => router.push(pathname + "?action=new-project")}
+                onClick={() => router.push(`?action=delete-project&projectId=${projectId}&returnUrl=/`)}
               >
                 <Text color={"red.600"} fontWeight={"medium"}>
                   Remove project
@@ -97,14 +97,16 @@ export default function ViewProjectsPage() {
           {/* Content */}
           {servicesLength > 0 ? (
             <VStack w={'100%'} textAlign={'left'} alignItems={'flex-start'} gap={4} mt={4}>
-              <Text as={'h3'} w={'fit-content'} fontSize={{ base: "xl", sm: "16px" }} fontWeight={600}>Services</Text>
+              {/* <Text as={'h3'} w={'fit-content'} fontSize={{ base: "xl", sm: "16px" }} fontWeight={600}>Services</Text> */}
               <TableContainer width={"100%"} bg={"white"} borderRadius={"8px"} >
-                <Table variant='theme' size={"sm"}>
+                <Table variant='custom-theme' size={"sm"}>
                   <Thead fontSize={'12px'} pb={1}>
                     <Tr>
-                      <Th>Name</Th>
-                      <Th>Instances</Th>
+                      <Th></Th>
+                      <Th>Service Name</Th>
+                      <Th>Running Instances</Th>
                       <Th>Date Added</Th>
+                      <Th>Action</Th>
                     </Tr>
                   </Thead>
                   <Tbody fontSize={'14px'}>
@@ -112,17 +114,30 @@ export default function ViewProjectsPage() {
                       const instancesLength = service.instances?.length || 'None';
                       return (<Tr key={service.id + i}>
                         <Td pl={2}>
-                          <Link textTransform={'capitalize'} href={`/services/${service.id}`}>
+                          {i+1}
+                        </Td>
+                        <Td>
+                          <Text textTransform={'capitalize'} fontWeight={400}>
                             {service.name}
-                          </Link>
+                          </Text>
                         </Td>
                         <Td>
                           {instancesLength}
                         </Td>
                         <Td>
                           <Text fontSize={12}>
-                            {dateFormatter(service.createdAt).format("LLL")}
+                            {dateFormatter(service.serviceCreatedAt || service.createdAt).format("LLLL")}
                           </Text>
+                        </Td>
+                        <Td>
+                          <HStack>
+                            <Link textTransform={'lowercase'} fontSize={'12px'} fontWeight={600} href={`/services/${service.id}`}>
+                              view
+                            </Link>
+                            <Link textTransform={'lowercase'} fontSize={'12px'} fontWeight={600} color={'red'} href={`?action=delete-service&serviceId=${service.id}&returnUrl=/projects/${service.projectId}`}>
+                              delete
+                            </Link>
+                          </HStack>
                         </Td>
                       </Tr>)
                     })}
@@ -133,8 +148,6 @@ export default function ViewProjectsPage() {
           ) : <Text w={'100%'} textAlign={'center'} fontSize={'12px'} my={1}>No services available</Text>}
           {/* END Content */}
         </VStack>}
-
-      {/* {error && <ErrorComponent explaination="The project you are looking for is currently unavailable." callback={() => router.replace('/projects')} />} */}
     </Box>
   </>
 }

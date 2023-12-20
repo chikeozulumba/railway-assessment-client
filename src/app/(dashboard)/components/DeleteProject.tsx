@@ -21,7 +21,7 @@ type Props = {
   projectId: string;
 };
 
-export const DeleteNewProjectComponent = (props: Props) => {
+export const DeleteProjectComponent = (props: Props) => {
 
   const { isOpen, onClose } = props;
 

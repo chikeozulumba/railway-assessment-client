@@ -25,6 +25,12 @@ export const DELETE_RAILWAY_PROJECT_MUTATION = gql`
   }
 `;
 
+export const DELETE_RAILWAY_SERVICE_MUTATION = gql`
+  mutation DeleteRailwayService($id: String!) {
+    deleteRailwayService(id: $id)
+  }
+`;
+
 export const CREATE_NEW_RAILWAY_PROJECT_MUTATION = gql`
   mutation CreateNewRailwayProject($payload: CreateNewRailwayProjectDTO!) {
     createNewRailwayProject(payload: $payload) {

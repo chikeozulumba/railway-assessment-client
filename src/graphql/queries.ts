@@ -70,6 +70,8 @@ export const GET_RAILWAY_PROJECTS = gql`
         name
         serviceCreatedAt
         serviceUpdatedAt
+        createdAt
+        updatedAt
         instances {
           id
           railwayServiceInstanceId
@@ -110,6 +112,50 @@ export const GET_RAILWAY_PROJECT = gql`
         name
         serviceCreatedAt
         serviceUpdatedAt
+        createdAt
+        updatedAt
+        instances {
+          id
+          railwayServiceInstanceId
+          builder
+          buildCommand
+          sourceImage
+          sourceRepo
+          sourceTemplateName
+          sourceTemplateSource
+          startCommand
+          numReplicas
+        }
+      }
+    }
+  }
+`;
+
+export const GET_RAILWAY_PROJECT_DEPLOYMENTS = gql`
+  query ($projectId: String!) {
+    getRailwayProjectDeployments(projectId: $projectId) {
+      id
+      userId
+      tokenId
+      railwayProjectId
+      name
+      description
+      projectCreatedAt
+      projectUpdatedAt
+      prDeploys
+      prForks
+      createdAt
+      updatedAt
+
+      services {
+        id
+        projectId
+        railwayServiceId
+        name
+        serviceCreatedAt
+        serviceUpdatedAt
+        createdAt
+        updatedAt
         instances {
           id
           railwayServiceInstanceId

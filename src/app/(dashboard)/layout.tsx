@@ -7,11 +7,12 @@ import { Alert, AlertIcon, Box, Container, Text, useDisclosure } from "@chakra-u
 import { Link } from "@chakra-ui/next-js";
 import { useQuery } from "@apollo/client";
 import { NavigationBar } from "@/components/Navbar";
-import { GET_PROFILE_AND_RAILWAY_TOKENS, GET_RAILWAY_PROJECTS } from "@/graphql/queries";
+import { GET_PROFILE_AND_RAILWAY_TOKENS, GET_RAILWAY_PROJECTS, USER_GITHUB_REPOSITORIES } from "@/graphql/queries";
 import type { Project } from "@/@types/project";
 import { AddNewServiceToProjectComponent } from "./components/AddNewServiceToProject";
 import { CreateNewProjectComponent } from "./components/CreateNewProject";
-import { DeleteNewProjectComponent } from "./components/DeleteProject";
+import { DeleteProjectComponent } from "./components/DeleteProject";
+import { DeleteServiceComponent } from "./components/DeleteService";
 
 export default function DashboardLayout({
   children,
@@ -26,6 +27,7 @@ export default function DashboardLayout({
   const action = searchParams.get("action");
   const projectId = searchParams.get("projectId");
   const serviceId = searchParams.get("serviceId");
+  const returnUrl = searchParams.get("returnUrl") || undefined;
 
   const shouldNewServiceModalBeOpen = Boolean(
     action === "new-service" && projectId
@@ -35,6 +37,9 @@ export default function DashboardLayout({
   );
   const shouldDeleteProjectModalBeOpen = Boolean(
     action === "delete-project" && projectId
+  );
+  const shouldDeleteServiceModalBeOpen = Boolean(
+    action === "delete-service" && serviceId
   );
 
   const { data: projectsData, loading: projectsLoading } = useQuery(GET_RAILWAY_PROJECTS, {
@@ -54,7 +59,7 @@ export default function DashboardLayout({
   } = useDisclosure({
     isOpen: shouldNewServiceModalBeOpen,
     onClose() {
-      router.replace(pathname)
+      router.replace(returnUrl || pathname)
     },
   });
 
@@ -64,7 +69,7 @@ export default function DashboardLayout({
   } = useDisclosure({
     isOpen: shouldCreateNewProjectModalBeOpen,
     onClose() {
-      router.replace(pathname);
+      router.replace(returnUrl || pathname);
     },
   });
 
@@ -74,13 +79,24 @@ export default function DashboardLayout({
   } = useDisclosure({
     isOpen: shouldDeleteProjectModalBeOpen,
     onClose() {
-      router.replace(pathname);
+      router.replace(returnUrl || pathname);
+    },
+  });
+
+  const {
+    onClose: deleteServiceModalOnClose,
+    isOpen: deleteServiceModalIsOpen,
+  } = useDisclosure({
+    isOpen: shouldDeleteServiceModalBeOpen,
+    onClose() {
+      router.replace(returnUrl || pathname);
     },
   });
 
   const auth = useUser();
 
   const { data, loading } = useQuery(GET_PROFILE_AND_RAILWAY_TOKENS);
+  const {} = useQuery(USER_GITHUB_REPOSITORIES, );
 
   const shouldHideTokenAlertBox = !["/settings"].includes(pathname);
   const railwayAccountConnected = data?.getRailwayTokens?.length > 0;
@@ -117,10 +133,18 @@ export default function DashboardLayout({
         modalProps={{ closeOnOverlayClick: false, isCentered: true }}
       />
 
-      {projectId && <DeleteNewProjectComponent
+      {projectId && <DeleteProjectComponent
         projectId={projectId}
         onClose={deleteProjectModalOnClose}
         isOpen={deleteProjectModalIsOpen}
+        modalProps={{ closeOnOverlayClick: false, isCentered: true }}
+      />}
+
+      {serviceId && <DeleteServiceComponent
+        serviceId={serviceId}
+        projectId={projectId || undefined}
+        onClose={deleteServiceModalOnClose}
+        isOpen={deleteServiceModalIsOpen}
         modalProps={{ closeOnOverlayClick: false, isCentered: true }}
       />}
     </>

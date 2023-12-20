@@ -47,7 +47,7 @@ export const AddNewServiceToProjectComponent = (props: Props) => {
     }
 
     return queries;
-  }, [])
+  }, []);
 
   const [addNewRailwayProjectService, { loading: addNewRailwayProjectServiceLoading }] =
     useMutation(CREATE_NEW_RAILWAY_SERVICE_MUTATION, {
