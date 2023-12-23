@@ -71,7 +71,7 @@ export const DeleteServiceComponent = (props: Props) => {
     <ModalComponent
       title="Delete service"
       description={
-        <Text fontWeight={400} fontSize={"14px"}>
+        <Text fontWeight={400} fontSize={"12px"}>
           Remove this service from RunThrough
         </Text>
       }

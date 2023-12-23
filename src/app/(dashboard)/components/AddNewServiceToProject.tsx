@@ -136,7 +136,7 @@ export const AddNewServiceToProjectComponent = (props: Props) => {
     <ModalComponent
       title="Add new service"
       description={
-        <Text fontWeight={400} fontSize={"14px"}>
+        <Text fontWeight={400} fontSize={"12px"}>
           Add a new service to{" "}
           <strong style={{ textTransform: "capitalize" }}>
             {project?.name}

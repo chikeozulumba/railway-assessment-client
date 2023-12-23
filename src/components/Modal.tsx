@@ -22,6 +22,7 @@ type Props = {
   proceed?: () => void;
   buttonDisabled?: boolean;
   proceedButtonText?: string;
+  showFooter?: boolean;
 } & Partial<ModalProps>;
 
 export function ModalComponent({
@@ -33,6 +34,7 @@ export function ModalComponent({
   proceed,
   buttonDisabled,
   proceedButtonText,
+  showFooter = true,
   ...args
 }: Props) {
   return (
@@ -41,7 +43,7 @@ export function ModalComponent({
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            <Text as="h3" fontSize={{ base: "sm", sm: "large" }}>
+            <Text as="h3" fontWeight={500} fontSize={{ base: "sm", sm: "large" }}>
               {title}
             </Text>
             {description && (
@@ -53,8 +55,9 @@ export function ModalComponent({
           <ModalCloseButton _hover={{ bg: "#F4EAE0" }} />
           <ModalBody>{children}</ModalBody>
 
-          <ModalFooter>
+          {showFooter && <ModalFooter>
             <Button
+              isLoading={buttonDisabled}
               bg="#F4DFC8"
               color={"#000"}
               mr={3}
@@ -81,7 +84,7 @@ export function ModalComponent({
             >
               Cancel
             </Button>
-          </ModalFooter>
+          </ModalFooter>}
         </ModalContent>
       </Modal>
     </>

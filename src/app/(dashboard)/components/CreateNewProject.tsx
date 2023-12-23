@@ -85,7 +85,6 @@ export const CreateNewProjectComponent = (props: Props) => {
       setFetchedRepos('fetched');
       setRepos(data?.fetchUserGithubRepositories || []);
     } catch (error) {
-      console.log(error);
       setFetchedRepos('error');
       Toast('Failed to retrieve project repositories.', { time: 4 });
     }
@@ -97,7 +96,6 @@ export const CreateNewProjectComponent = (props: Props) => {
     try {
       const tokenId = getValues("tokenId");
       const repo = getValues("repo.fullRepoName");
-      console.log(repo, tokenId)
       if (!repo || !tokenId) return;
 
       setBranchesState([]);
@@ -172,7 +170,7 @@ export const CreateNewProjectComponent = (props: Props) => {
     <ModalComponent
       title="Create new project"
       description={
-        <Text fontWeight={400} fontSize={"14px"}>
+        <Text fontWeight={400} fontSize={"12px"}>
           Create a new project by filling out the required fields below.
         </Text>
       }

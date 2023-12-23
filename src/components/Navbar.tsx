@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { Link } from "@chakra-ui/next-js";
 import { useAuthStore } from "@/store/auth";
-import { useClerk } from "@clerk/nextjs";
+import { UserButton, useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 interface Props {
@@ -52,7 +52,8 @@ export function NavigationBar() {
                     cursor={"pointer"}
                     minW={0}
                   >
-                    <Avatar size={"sm"} src={(user?.data as any)?.avatarUrl} />
+                    {/* <Avatar size={"sm"} src={(user?.data as any)?.avatarUrl} /> */}
+                  <UserButton />
                   </MenuButton>
                   <MenuList alignItems={"center"}>
                     <MenuItem>

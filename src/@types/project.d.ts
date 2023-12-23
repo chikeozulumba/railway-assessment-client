@@ -26,6 +26,7 @@ export type Service = {
   projectId: string;
   railwayServiceId: string;
   name: string | null;
+  icon: string | null;
   serviceCreatedAt: Date | null;
   serviceUpdatedAt: Date | null;
   createdAt: Date;

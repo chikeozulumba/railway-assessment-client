@@ -52,10 +52,10 @@ export const DashboardProjects = ({ projects }: Props) => {
       <VStack width={"100%"}>
         <HStack w={'100%'}>
           <Box width={"100%"}>
-            <Text fontSize={{ base: "16px" }} fontWeight={600}>
+            <Text fontSize={{ base: "16px" }} fontWeight={500}>
               Your Projects
             </Text>
-            <Text fontSize={{ base: "14px" }} fontWeight={400}>
+            <Text fontSize={{ base: "14px" }} fontWeight={400} opacity={0.8}>
               Effortlessly streamline and elevate your projects performance on
               Railway using RunThrough.
             </Text>
@@ -69,7 +69,7 @@ export const DashboardProjects = ({ projects }: Props) => {
             size={{ base: "sm" }}
             fontSize={{ base: "12px" }}
             rightIcon={<FaCaretRight style={{ color: "#000" }} />}
-            borderRadius={"12px"}
+            borderRadius={"4px"}
             background={"#F4DFC8"}
             _hover={{
               background: "#F4EAE0",
@@ -85,7 +85,7 @@ export const DashboardProjects = ({ projects }: Props) => {
 
       <Grid
         templateColumns={`repeat(${defineGridSize(breakpoint, projects?.length)}, 1fr)`}
-        gap={6}
+        gap={4}
         width={"100%"}
       >
         {projects.map((project) => {
@@ -101,8 +101,8 @@ export const DashboardProjects = ({ projects }: Props) => {
               borderRadius={"8px"}
               overflow={"hidden"}
               bg={"white"}
-              borderColor={"#F4EAE0"}
               height={"fit-content"}
+              borderColor={"#F4EAE0"}
               _hover={{ borderColor: "#F4DFC8" }}
             >
               <AccordionItem
@@ -117,7 +117,7 @@ export const DashboardProjects = ({ projects }: Props) => {
                           <HStack>
                             <Link
                               href={`/projects/${project.id}`}
-                              fontWeight={600}
+                              fontWeight={500}
                               fontSize={{ base: "md", md: "lg" }}
                               textTransform={"capitalize"}
                             >

@@ -23,14 +23,14 @@ export default function Home() {
         <VStack gap={8} justifyContent={"start"}>
           <HStack width={"100%"} justifyContent={"space-between"}>
             <Text
-              fontSize={{ base: "2xl", sm: "18px", md: "24px" }}
-              fontWeight={600}
+              fontSize={{ base: "2xl", sm: "16px", md: "24px" }}
+              fontWeight={500}
             >
               Hi, {auth.user?.firstName}
             </Text>
           </HStack>
 
-          <VStack gap={8} width={"100%"}>
+          <VStack gap={4} width={"100%"}>
             <DashboardProjects projects={projects} />
           </VStack>
         </VStack>

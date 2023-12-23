@@ -28,8 +28,6 @@ export default authMiddleware({
         }
       });
 
-      console.log(data);
-
       if (typeof data?.authorize?.id !== 'string') {
         return redirectToSignUp({ returnBackUrl: req.url });
       }
@@ -45,7 +43,6 @@ export default authMiddleware({
       if (['Unauthorized', 'Invalid authorization token'].includes((error as any)?.message)) {
         return redirectToSignIn({ returnBackUrl: req.url });
       }
-      console.log((error as any)?.message);
     }
   }
 });

@@ -1,12 +1,15 @@
 'use client';
+import { useMemo } from "react";
 import { notFound, useParams, usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@apollo/client";
-import { Box, Button, HStack, Spacer, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack } from "@chakra-ui/react";
-import { Link } from "@chakra-ui/next-js";
-import { GET_RAILWAY_PROJECT } from "@/graphql/queries";
+import { Box, Button, Divider, Grid, GridItem, HStack, Spacer, Text, VStack } from "@chakra-ui/react";
+import { GET_RAILWAY_PROJECT, GET_RAILWAY_PROJECT_DEPLOYMENTS } from "@/graphql/queries";
 import { ProjectBreadCrumbs } from "../components/Breadcrumbs";
 import { dateFormatter } from "@/utils/date";
 import type { Project } from "@/@types/project";
+import { ViewServicesComponent } from "../components/ViewServices";
+import { ViewProjectDeploymentsComponent } from "../components/ViewProjectDeployments";
+import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 export default function ViewProjectsPage() {
   const router = useRouter();
@@ -18,6 +21,12 @@ export default function ViewProjectsPage() {
     variables: { projectId }
   });
 
+  const { data: deploymentsData, loading: deploymentsDataLoading, error: deploymentsDataError } = useQuery(GET_RAILWAY_PROJECT_DEPLOYMENTS, {
+    skip: typeof projectId !== 'string',
+    pollInterval: 5000,
+    variables: { projectId }
+  });
+
   const project: Project = data?.getRailwayProject;
   const services = project?.services || [];
   const servicesLength = services.length;
@@ -26,128 +35,140 @@ export default function ViewProjectsPage() {
     return notFound();
   }
 
+  const memoisedDeploymentData = useMemo(() => {
+    if (!deploymentsDataLoading && deploymentsData?.getRailwayProjectDeployments) {
+      const data = JSON.parse(deploymentsData?.getRailwayProjectDeployments);
+      return Array.isArray(data?.edges) ? data.edges : [];
+    }
+
+    return [];
+  }, [deploymentsData]);
+
+  const isDataSuccessful = !deploymentsDataLoading && deploymentsData?.getRailwayProjectDeployments
+
   return !loading && <>
     {project && <ProjectBreadCrumbs items={[
       { name: project.name || 'Project', path: `/projects/${project.id}`, currentPage: true }
     ]} />}
 
-    <Box bg={"#fff"} p={4} border={1} boxShadow="xs"
-      borderWidth={1}
-      borderRadius={"8px"}
-      overflow={"hidden"}
-      borderColor={"#F4EAE0"}>
-
-      {project && !loading && !error &&
-        <VStack w={'100%'}>
-          <HStack w={'100%'}>
-            <Box>
-              <Text
-                textTransform={'capitalize'}
-                fontSize={{ base: "2xl", sm: "18px", md: "24px" }}
-                fontWeight={600}
-              >
-                {project.name}
-              </Text>
-              <Text fontSize={"12px"} opacity={0.7}>
-                Started{" "}
-                {dateFormatter().to(
-                  dateFormatter(project.projectCreatedAt)
-                )}
-              </Text>
-            </Box>
-            <Spacer />
-            <HStack>
-              <Button
-                w={"fit-content"}
-                px={4}
-                size={{ base: "sm" }}
-                fontSize={{ base: "12px" }}
-                borderRadius={"12px"}
-                background={"#F4DFC8"}
-                _hover={{
-                  background: "#F4EAE0",
-                }}
-                onClick={() => router.push(pathname + `?action=new-service&projectId=${project.id}`)}
-              >
-                <Text color={"#000"} fontWeight={"medium"}>
-                  Add service
+    <Grid
+      // templateRows='repeat(2, 1fr)'
+      templateColumns={{ base: 'repeat(12, 1fr)' }}
+      gap={4}
+    >
+      <GridItem rowSpan={1} colSpan={5}>
+        {project && !loading && !error &&
+          <VStack w={'100%'} bg={"#fff"} p={4} border={1} boxShadow="xs"
+            borderWidth={1}
+            borderRadius={"8px"}
+            overflow={"hidden"}
+            borderColor={"#F4EAE0"} height={'fit-content'}>
+            <HStack w={'100%'} overflow={'hidden'}>
+              <Box overflow={'hidden'}>
+                <Text
+                  textTransform={'capitalize'}
+                  fontSize={{ base: "2xl", sm: "16px" }}
+                  fontWeight={500}
+                  isTruncated
+                  overflow={'hidden'}
+                >
+                  {project?.name}
                 </Text>
-              </Button>
-              <Button
-                w={"fit-content"}
-                px={4}
-                size={{ base: "sm" }}
-                fontSize={{ base: "12px" }}
-                borderRadius={"12px"}
-                background={"red.100"}
-                border="1px"
-                borderColor={'red.200'}
-                _hover={{
-                  background: "red.200",
-                }}
-                onClick={() => router.push(`?action=delete-project&projectId=${projectId}&returnUrl=/`)}
-              >
-                <Text color={"red.600"} fontWeight={"medium"}>
-                  Remove project
+                <Text mt={-1} fontSize={"12px"} opacity={0.7}>
+                  Started{" "}
+                  {dateFormatter().to(
+                    dateFormatter(project.projectCreatedAt)
+                  )}
                 </Text>
-              </Button>
+              </Box>
+              <Spacer />
+              <HStack>
+                <Button
+                  w={"fit-content"}
+                  p={2}
+                  size={{ base: "sm" }}
+                  fontSize={{ base: "12px" }}
+                  borderRadius={4}
+                  border="1px"
+                  borderColor={'#F4DFC8'}
+                  background={"#F4DFC8"}
+                  _hover={{
+                    background: "#F4EAE0",
+                  }}
+                  onClick={() => router.push(pathname + `?action=new-service&projectId=${project.id}`)}
+                >
+                  <PlusIcon height={14} color={'inherit'} />
+                </Button>
+                <Button
+                  w={"fit-content"}
+                  p={2}
+                  size={{ base: "sm" }}
+                  fontSize={{ base: "12px" }}
+                  borderRadius={4}
+                  background={"red.100"}
+                  border="1px"
+                  borderColor={'red.100'}
+                  color={'red.700'}
+                  _hover={{
+                    background: "red.50",
+                    color: 'red.600'
+                  }}
+                  onClick={() => router.push(`?action=delete-project&projectId=${projectId}&returnUrl=/`)}
+                >
+                  <TrashIcon height={14} color={'inherit'} />
+                </Button>
+              </HStack>
             </HStack>
-          </HStack>
 
-          {/* Content */}
-          {servicesLength > 0 ? (
-            <VStack w={'100%'} textAlign={'left'} alignItems={'flex-start'} gap={4} mt={4}>
-              {/* <Text as={'h3'} w={'fit-content'} fontSize={{ base: "xl", sm: "16px" }} fontWeight={600}>Services</Text> */}
-              <TableContainer width={"100%"} bg={"white"} borderRadius={"8px"} >
-                <Table variant='custom-theme' size={"sm"}>
-                  <Thead fontSize={'12px'} pb={1}>
-                    <Tr>
-                      <Th></Th>
-                      <Th>Service Name</Th>
-                      <Th>Running Instances</Th>
-                      <Th>Date Added</Th>
-                      <Th>Action</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody fontSize={'14px'}>
-                    {project.services?.map((service, i) => {
-                      const instancesLength = service.instances?.length || 'None';
-                      return (<Tr key={service.id + i}>
-                        <Td pl={2}>
-                          {i+1}
-                        </Td>
-                        <Td>
-                          <Text textTransform={'capitalize'} fontWeight={400}>
-                            {service.name}
-                          </Text>
-                        </Td>
-                        <Td>
-                          {instancesLength}
-                        </Td>
-                        <Td>
-                          <Text fontSize={12}>
-                            {dateFormatter(service.serviceCreatedAt || service.createdAt).format("LLLL")}
-                          </Text>
-                        </Td>
-                        <Td>
-                          <HStack>
-                            <Link textTransform={'lowercase'} fontSize={'12px'} fontWeight={600} href={`/services/${service.id}`}>
-                              view
-                            </Link>
-                            <Link textTransform={'lowercase'} fontSize={'12px'} fontWeight={600} color={'red'} href={`?action=delete-service&serviceId=${service.id}&returnUrl=/projects/${service.projectId}`}>
-                              delete
-                            </Link>
-                          </HStack>
-                        </Td>
-                      </Tr>)
-                    })}
-                  </Tbody>
-                </Table>
-              </TableContainer>
-            </VStack>  
-          ) : <Text w={'100%'} textAlign={'center'} fontSize={'12px'} my={1}>No services available</Text>}
-          {/* END Content */}
-        </VStack>}
-    </Box>
+            {/* Content */}
+            {servicesLength > 0 ? (
+              <>
+                <Divider my={2} w={'90%'} />
+                <ViewServicesComponent project={project} />
+              </>
+            ) : <Box borderStyle={'dashed'} borderRadius={4} borderColor={'#F4EAE0'} borderWidth={1} py={8} mt={4} w={'100%'} textAlign={'center'} fontSize={'12px'}>
+                <Text>No services available</Text>
+              </Box>}
+            {/* END Content */}
+          </VStack>}
+
+      </GridItem>
+
+      <GridItem colSpan={7} w={'100%'} bg={"#fff"} p={4} border={1} boxShadow="xs"
+        borderWidth={1}
+        as={VStack}
+        borderRadius={"8px"}
+        overflow={"hidden"}
+        borderColor={"#F4EAE0"}>
+
+        <VStack w={'100%'}>
+          <Text
+            textTransform={'capitalize'}
+            fontSize={{ base: "2xl", sm: "16px" }}
+            fontWeight={500}
+            w={'100%'}
+            textAlign={'left'}
+          >
+            Deployments
+          </Text>
+
+          {isDataSuccessful &&
+            <ViewProjectDeploymentsComponent
+              data={memoisedDeploymentData}
+              services={project?.services || []}
+              project={project}
+            />}
+          {!deploymentsDataLoading && !deploymentsData && <HStack borderStyle={'dashed'} borderWidth={1.5} borderRadius={8} w={'100%'} p={8} justifyContent={'center'}>
+            <Text
+              fontSize={{ base: "small" }}
+              fontWeight={400}
+            >
+              No deployments found
+            </Text>
+          </HStack>}
+        </VStack>
+      </GridItem>
+
+    </Grid>
   </>
 }

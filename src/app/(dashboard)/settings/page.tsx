@@ -129,7 +129,7 @@ export default function Settings() {
           size={{ base: "sm" }}
           fontSize={{ base: "12px" }}
           rightIcon={<FaCaretRight style={{ color: "#000" }} />}
-          borderRadius={"12px"}
+          borderRadius={"4px"}
           background={"#F4DFC8"}
           _hover={{
             background: "#F4EAE0",

@@ -58,7 +58,7 @@ export const DeleteProjectComponent = (props: Props) => {
     <ModalComponent
       title="Delete project"
       description={
-        <Text fontWeight={400} fontSize={"14px"}>
+        <Text fontWeight={400} fontSize={"12px"}>
           Remove this project from RunThrough
         </Text>
       }

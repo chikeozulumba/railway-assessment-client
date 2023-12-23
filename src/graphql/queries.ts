@@ -133,42 +133,30 @@ export const GET_RAILWAY_PROJECT = gql`
 
 export const GET_RAILWAY_PROJECT_DEPLOYMENTS = gql`
   query ($projectId: String!) {
-    getRailwayProjectDeployments(projectId: $projectId) {
-      id
-      userId
-      tokenId
-      railwayProjectId
-      name
-      description
-      projectCreatedAt
-      projectUpdatedAt
-      prDeploys
-      prForks
-      createdAt
-      updatedAt
+    getRailwayProjectDeployments(projectId: $projectId)
+  }
+`;
 
-      services {
-        id
-        projectId
-        railwayServiceId
-        name
-        serviceCreatedAt
-        serviceUpdatedAt
-        createdAt
-        updatedAt
-        instances {
-          id
-          railwayServiceInstanceId
-          builder
-          buildCommand
-          sourceImage
-          sourceRepo
-          sourceTemplateName
-          sourceTemplateSource
-          startCommand
-          numReplicas
-        }
-      }
-    }
+export const GET_RAILWAY_PROJECT_DEPLOYMENT = gql`
+  query ($projectId: String!) {
+    getRailwayProjectDeployments(projectId: $projectId)
+  }
+`;
+
+export const GET_RAILWAY_DEPLOYMENT = gql`
+  query ($deploymentId: String!, $tokenId: String!) {
+    getDeployment(deploymentId: $deploymentId, tokenId: $tokenId)
+  }
+`;
+
+export const GET_RAILWAY_DEPLOYMENT_LOGS = gql`
+  query ($deploymentId: String!, $tokenId: String!, $limit: String!) {
+    getDeploymentLogs(deploymentId: $deploymentId, tokenId: $tokenId, limit: $limit)
+  }
+`;
+
+export const GET_RAILWAY_DEPLOYMENT_BUILD_LOGS = gql`
+  query ($deploymentId: String!, $tokenId: String!, $limit: String!) {
+    getDeploymentBuildLogs(deploymentId: $deploymentId, tokenId: $tokenId, limit: $limit)
   }
 `;

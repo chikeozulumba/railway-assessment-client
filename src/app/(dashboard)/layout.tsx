@@ -13,6 +13,7 @@ import { AddNewServiceToProjectComponent } from "./components/AddNewServiceToPro
 import { CreateNewProjectComponent } from "./components/CreateNewProject";
 import { DeleteProjectComponent } from "./components/DeleteProject";
 import { DeleteServiceComponent } from "./components/DeleteService";
+import { ViewDeploymentComponent } from "./components/ViewDeployment";
 
 export default function DashboardLayout({
   children,
@@ -27,6 +28,7 @@ export default function DashboardLayout({
   const action = searchParams.get("action");
   const projectId = searchParams.get("projectId");
   const serviceId = searchParams.get("serviceId");
+  const deploymentId = searchParams.get("deploymentId");
   const returnUrl = searchParams.get("returnUrl") || undefined;
 
   const shouldNewServiceModalBeOpen = Boolean(
@@ -40,6 +42,9 @@ export default function DashboardLayout({
   );
   const shouldDeleteServiceModalBeOpen = Boolean(
     action === "delete-service" && serviceId
+  );
+  const shouldViewDeploymentModalBeOpen = Boolean(
+    action === "view-deployment" && deploymentId
   );
 
   const { data: projectsData, loading: projectsLoading } = useQuery(GET_RAILWAY_PROJECTS, {
@@ -88,6 +93,16 @@ export default function DashboardLayout({
     isOpen: deleteServiceModalIsOpen,
   } = useDisclosure({
     isOpen: shouldDeleteServiceModalBeOpen,
+    onClose() {
+      router.replace(returnUrl || pathname);
+    },
+  });
+
+  const {
+    onClose: viewDeploymentModalOnClose,
+    isOpen: viewDeploymentModalIsOpen,
+  } = useDisclosure({
+    isOpen: shouldViewDeploymentModalBeOpen,
     onClose() {
       router.replace(returnUrl || pathname);
     },
@@ -146,6 +161,13 @@ export default function DashboardLayout({
         onClose={deleteServiceModalOnClose}
         isOpen={deleteServiceModalIsOpen}
         modalProps={{ closeOnOverlayClick: false, isCentered: true }}
+      />}
+
+      {deploymentId && <ViewDeploymentComponent
+        deploymentId={deploymentId}
+        onClose={viewDeploymentModalOnClose}
+        isOpen={viewDeploymentModalIsOpen}
+        modalProps={{ closeOnOverlayClick: false, isCentered: false, size: "xl", }}
       />}
     </>
   );
