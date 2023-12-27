@@ -46,7 +46,7 @@ const ViewProjectServicePage = () => {
     }
 
     return [];
-  }, [deploymentsData, service, deploymentsLoading]);
+  }, [deploymentsData, deploymentsLoading]);
   
   const isDataSuccessful = !loading && deploymentsData?.getRailwayServiceDeployments
 
