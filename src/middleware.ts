@@ -23,7 +23,7 @@ export default authMiddleware({
       const { data } = await apolloClient.mutate({
         mutation: AUTHORIZE_USER_MUTATION, variables: { payload: { uid: auth.userId } }, context: {
           headers: {
-            'x-auth-token': token,
+            'authorization': 'Bearer ' + token,
           }
         }
       });
