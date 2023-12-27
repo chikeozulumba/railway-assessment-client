@@ -92,7 +92,6 @@ export const ViewDeploymentComponent = (props: Props) => {
   }, [getDeploymentBuildLogsData]);
 
   const navigateLogsTypeAndLimit = useCallback(async (value: 'build' | 'deployment' | undefined, limit: number | string = 100) => {
-    console.log(limit)
     const url = new URL(window.location.href);
     const currentLogType = url.searchParams.get('logType')
     if (value === undefined) {
@@ -123,7 +122,7 @@ export const ViewDeploymentComponent = (props: Props) => {
       title="View Deployment"
       description={
         <Text fontWeight={400} fontSize={"12px"}>
-          Remove this service from RunThrough
+          View deployment information
         </Text>
       }
       isOpen={isOpen}

@@ -7,13 +7,15 @@ import { Link } from "@chakra-ui/next-js";
 import { dateFormatter } from "@/utils/date";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { GithubIconComponent } from "../../components/icons/Github";
-import type { Project, Service } from "@/@types/project";
+import type { Project, Service, ServiceInstance } from "@/@types/project";
 import { textColor } from "@/utils/text";
 
 type Props = {
   data: any[];
   services?: Service[];
-  project: Project;
+  service?: Service;
+  project?: Project;
+  serviceInstances?: ServiceInstance[];
 }
 
 const Wrapper: any = React.forwardRef((props, ref: any) => {
@@ -38,7 +40,7 @@ const ItemWrapper: any = React.forwardRef((props, ref: any) => {
   />
 });
 
-export const ViewProjectDeploymentsComponent = (props: Props) => {
+export const ViewServiceDeploymentsComponent = (props: Props) => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -55,12 +57,12 @@ export const ViewProjectDeploymentsComponent = (props: Props) => {
         const status = deployment.node.status?.toUpperCase();
         const repo = deployment.node.meta?.repo;
         const branch = deployment.node.meta?.branch;
+        const commitMessage = deployment.node.meta?.commitMessage;
         const commitAuthor = deployment.node.meta?.commitAuthor;
         const image = deployment.node.meta?.image;
         const isGithub = typeof repo === 'string' && typeof branch === 'string' && typeof commitAuthor === 'string';
         const isImage = typeof image === 'string';
 
-        const service = props.services?.find((s) => s.railwayServiceId === deployment.node.service?.id);
         const serviceImage = deployment.node.service?.icon;
         return (
           <Grid
@@ -71,19 +73,22 @@ export const ViewProjectDeploymentsComponent = (props: Props) => {
                 <Box mt={1}>
                   {typeof serviceImage === 'string' ? <Image width={20} height={20} src={serviceImage} alt="" /> : isGithub ? <GithubIconComponent height={16} width={16} /> : <Box height={5} width={5} />}
                 </Box>
-                <VStack alignItems={'start'} w={'100%'} gap={0}>
-                  <Text textTransform={'capitalize'} fontSize={12} fontWeight={500}>
-                    {service?.name}
-                  </Text>
+                {(isGithub || isImage) ? <VStack alignItems={'start'} w={'100%'} gap={0}>
+                  {isGithub && <Text fontSize={12} fontWeight={400}>
+                    {commitMessage}
+                  </Text>}
                   {isGithub && <Tooltip label={'Click to view'} fontSize={10} hasArrow>
                     <Text fontSize={10}>via{' '}<Code borderRadius={2} bg={'#F4DFC8'} fontSize={10}><Link href={`https://github.com/${repo}`}>Github</Link></Code></Text>
                   </Tooltip>}
                   {isImage && <Text mt={0}>
                     <Text fontSize={10}>via{' '}<Code borderRadius={2} bg={'#F4DFC8'} fontSize={10}>Dockerhub</Code></Text>
                   </Text>}
-                </VStack>
+                </VStack> : <Box>
+                  <Text fontSize={12}>Missing source</Text>
+                </Box>}
               </HStack>
             </GridItem>
+
             <GridItem rowSpan={1} colSpan={5}>
               <Box>
                 <Tooltip size={'small'} hasArrow fontSize={'10px'} label={dateFormatter(deployment.node.createdAt).format('LLLL')}>
@@ -98,6 +103,7 @@ export const ViewProjectDeploymentsComponent = (props: Props) => {
                 </Tooltip>
               </Box>
             </GridItem>
+            
             <GridItem rowSpan={1} colSpan={1}>
               <Box>
                 <Menu>

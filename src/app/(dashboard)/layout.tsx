@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { Alert, AlertIcon, Box, Container, Text, useDisclosure } from "@chakra-ui/react";
@@ -14,6 +14,7 @@ import { CreateNewProjectComponent } from "./components/CreateNewProject";
 import { DeleteProjectComponent } from "./components/DeleteProject";
 import { DeleteServiceComponent } from "./components/DeleteService";
 import { ViewDeploymentComponent } from "./components/ViewDeployment";
+import { DeployGithubRepositoryComponent } from "./components/DeployGithubRepository";
 
 export default function DashboardLayout({
   children,
@@ -46,6 +47,9 @@ export default function DashboardLayout({
   const shouldViewDeploymentModalBeOpen = Boolean(
     action === "view-deployment" && deploymentId
   );
+  const shouldNewGithubServiceModalBeOpen = Boolean(
+    action === "new-github-service" && projectId
+  );
 
   const { data: projectsData, loading: projectsLoading } = useQuery(GET_RAILWAY_PROJECTS, {
     // pollInterval: 5000
@@ -53,19 +57,29 @@ export default function DashboardLayout({
 
   const projects: Project[] = useMemo(() => projectsData?.railwayProjects || [], [projectsData]);
 
-  const currentProject = useMemo(() => {
+  const project = useMemo(() => {
     if (!projectId) return undefined
     return projects.find((p) => p.id === projectId) || undefined
-  }, [projectId, projects])
+  }, [projectId, projects]);
+
+  const onClose = useCallback(() => {
+    router.replace(returnUrl || pathname);
+  }, [returnUrl]);
 
   const {
     onClose: newServiceModalOnClose,
     isOpen: newServiceModalIsOpen,
   } = useDisclosure({
     isOpen: shouldNewServiceModalBeOpen,
-    onClose() {
-      router.replace(returnUrl || pathname)
-    },
+    onClose,
+  });
+
+  const {
+    onClose: newServiceGithubModalOnClose,
+    isOpen: newServiceGithubModalIsOpen,
+  } = useDisclosure({
+    isOpen: shouldNewGithubServiceModalBeOpen,
+    onClose,
   });
 
   const {
@@ -73,9 +87,7 @@ export default function DashboardLayout({
     isOpen: createNewProjectModalIsOpen,
   } = useDisclosure({
     isOpen: shouldCreateNewProjectModalBeOpen,
-    onClose() {
-      router.replace(returnUrl || pathname);
-    },
+    onClose,
   });
 
   const {
@@ -83,9 +95,7 @@ export default function DashboardLayout({
     isOpen: deleteProjectModalIsOpen,
   } = useDisclosure({
     isOpen: shouldDeleteProjectModalBeOpen,
-    onClose() {
-      router.replace(returnUrl || pathname);
-    },
+    onClose,
   });
 
   const {
@@ -93,9 +103,7 @@ export default function DashboardLayout({
     isOpen: deleteServiceModalIsOpen,
   } = useDisclosure({
     isOpen: shouldDeleteServiceModalBeOpen,
-    onClose() {
-      router.replace(returnUrl || pathname);
-    },
+    onClose,
   });
 
   const {
@@ -103,9 +111,7 @@ export default function DashboardLayout({
     isOpen: viewDeploymentModalIsOpen,
   } = useDisclosure({
     isOpen: shouldViewDeploymentModalBeOpen,
-    onClose() {
-      router.replace(returnUrl || pathname);
-    },
+    onClose,
   });
 
   const auth = useUser();
@@ -137,8 +143,8 @@ export default function DashboardLayout({
 
       <AddNewServiceToProjectComponent
         onClose={newServiceModalOnClose}
-        isOpen={Boolean(currentProject && newServiceModalIsOpen)}
-        project={currentProject}
+        isOpen={Boolean(project && newServiceModalIsOpen)}
+        project={project}
         modalProps={{ isCentered: false, closeOnOverlayClick: false }}
       />
 
@@ -169,6 +175,13 @@ export default function DashboardLayout({
         isOpen={viewDeploymentModalIsOpen}
         modalProps={{ closeOnOverlayClick: false, isCentered: false, size: "xl", }}
       />}
+
+      <DeployGithubRepositoryComponent
+        onClose={newServiceGithubModalOnClose}
+        isOpen={Boolean(project && newServiceGithubModalIsOpen)}
+        project={project}
+        modalProps={{ isCentered: true, closeOnOverlayClick: false }}
+      />
     </>
   );
 }

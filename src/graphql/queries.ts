@@ -37,6 +37,7 @@ export const USER_GITHUB_REPOSITORIES = gql`
       id
       fullName
       defaultBranch
+      isPrivate
     }
   }
 `;
@@ -143,6 +144,12 @@ export const GET_RAILWAY_PROJECT_DEPLOYMENT = gql`
   }
 `;
 
+export const GET_RAILWAY_SERVICE_DEPLOYMENTS = gql`
+  query ($serviceId: String!) {
+    getRailwayServiceDeployments(serviceId: $serviceId)
+  }
+`;
+
 export const GET_RAILWAY_DEPLOYMENT = gql`
   query ($deploymentId: String!, $tokenId: String!) {
     getDeployment(deploymentId: $deploymentId, tokenId: $tokenId)
@@ -158,5 +165,12 @@ export const GET_RAILWAY_DEPLOYMENT_LOGS = gql`
 export const GET_RAILWAY_DEPLOYMENT_BUILD_LOGS = gql`
   query ($deploymentId: String!, $tokenId: String!, $limit: String!) {
     getDeploymentBuildLogs(deploymentId: $deploymentId, tokenId: $tokenId, limit: $limit)
+  }
+`;
+
+
+export const GET_RAILWAY_SERVICE = gql`
+  query ($serviceId: String!) {
+    getRailwayService(serviceId: $serviceId)
   }
 `;

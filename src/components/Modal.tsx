@@ -63,7 +63,7 @@ export function ModalComponent({
               mr={3}
               onClick={proceed}
               fontSize={"small"}
-              fontWeight={600}
+              fontWeight={500}
               _hover={{
                 bg: "#F4EAE0",
               }}

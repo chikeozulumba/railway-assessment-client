@@ -9,17 +9,19 @@ type Props = {
     name: string;
     path: string;
     currentPage?: boolean;
-  }>
+  } | undefined>
+  showRoot?: boolean;
 }
 
 export function ProjectBreadCrumbs(props: Props) {
+  const { showRoot = true } = props
   return <Breadcrumb spacing='8px' mb={1} alignItems={'center'} separator={<ChevronRightIcon height={'12px'} color='gray.500' />}>
-    <BreadcrumbItem>
+    {showRoot && <BreadcrumbItem isCurrentPage={props.items?.length === 0}>
       <BreadcrumbLink color={'#222831'} fontSize={'14px'} href='/'>Projects</BreadcrumbLink>
-    </BreadcrumbItem>
+    </BreadcrumbItem>}
 
-    {props.items?.map((item, i) => <BreadcrumbItem key={i} isCurrentPage={item.currentPage || i === (props.items?.length || 0) - 1}>
-      <BreadcrumbLink color={'#222831'} fontSize={'14px'} fontWeight={600} textTransform={'capitalize'} href={item.path}>{item.name}</BreadcrumbLink>
+    {props.items?.filter(Boolean).map((item, i) => <BreadcrumbItem key={i} isCurrentPage={item?.currentPage}>
+      <BreadcrumbLink color={'#222831'} fontSize={'14px'} fontWeight={item?.currentPage ? 600 : 400} textTransform={'capitalize'} href={item?.path || ''}>{item?.name}</BreadcrumbLink>
     </BreadcrumbItem>)}
   </Breadcrumb>
 }

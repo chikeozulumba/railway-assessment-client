@@ -156,7 +156,7 @@ export const DashboardProjects = ({ projects }: Props) => {
                               return (
                                 <ListItem key={service.id} display={'flex'} justifyContent={'space-between'}>
                                   <Link
-                                    href={`?action=view-service&serviceId=${service.id}&projectId=${project.id}`}
+                                    href={`/projects/${project.id}/services/${service.id}`}
                                     fontSize={"12px"}
                                     color={NORMAL_TEXT_COLOR}
                                     textTransform={"capitalize"}

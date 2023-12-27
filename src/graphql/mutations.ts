@@ -54,3 +54,9 @@ export const REMOVE_RAILWAY_TOKEN_MUTATION = gql`
     }
   }
 `;
+
+export const DEPLOY_GITHUB_REPO_TO_PROJECT = gql`
+  mutation DeployGithubRepoToProject($projectId: String!, $repo: String!) {
+    deployGithubRepo(projectId: $projectId, repo: $repo) 
+  }
+`;

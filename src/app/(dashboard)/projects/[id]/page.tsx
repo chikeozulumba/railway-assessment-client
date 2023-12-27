@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import { notFound, useParams, usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@apollo/client";
-import { Box, Button, Divider, Grid, GridItem, HStack, Spacer, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Divider, Grid, GridItem, HStack, Spacer, Text, Tooltip, VStack } from "@chakra-ui/react";
 import { GET_RAILWAY_PROJECT, GET_RAILWAY_PROJECT_DEPLOYMENTS } from "@/graphql/queries";
 import { ProjectBreadCrumbs } from "../components/Breadcrumbs";
 import { dateFormatter } from "@/utils/date";
@@ -10,6 +10,7 @@ import type { Project } from "@/@types/project";
 import { ViewServicesComponent } from "../components/ViewServices";
 import { ViewProjectDeploymentsComponent } from "../components/ViewProjectDeployments";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { GithubIconComponent } from "../../components/icons/Github";
 
 export default function ViewProjectsPage() {
   const router = useRouter();
@@ -18,6 +19,7 @@ export default function ViewProjectsPage() {
 
   const { data, loading, error } = useQuery(GET_RAILWAY_PROJECT, {
     skip: typeof projectId !== 'string',
+    pollInterval: 5000,
     variables: { projectId }
   });
 
@@ -83,40 +85,62 @@ export default function ViewProjectsPage() {
               </Box>
               <Spacer />
               <HStack>
-                <Button
-                  w={"fit-content"}
-                  p={2}
-                  size={{ base: "sm" }}
-                  fontSize={{ base: "12px" }}
-                  borderRadius={4}
-                  border="1px"
-                  borderColor={'#F4DFC8'}
-                  background={"#F4DFC8"}
-                  _hover={{
-                    background: "#F4EAE0",
-                  }}
-                  onClick={() => router.push(pathname + `?action=new-service&projectId=${project.id}`)}
-                >
-                  <PlusIcon height={14} color={'inherit'} />
-                </Button>
-                <Button
-                  w={"fit-content"}
-                  p={2}
-                  size={{ base: "sm" }}
-                  fontSize={{ base: "12px" }}
-                  borderRadius={4}
-                  background={"red.100"}
-                  border="1px"
-                  borderColor={'red.100'}
-                  color={'red.700'}
-                  _hover={{
-                    background: "red.50",
-                    color: 'red.600'
-                  }}
-                  onClick={() => router.push(`?action=delete-project&projectId=${projectId}&returnUrl=/`)}
-                >
-                  <TrashIcon height={14} color={'inherit'} />
-                </Button>
+                <Tooltip size={'sm'} fontSize={'10px'} label="Deploy Github repository as service.">
+                  <Button
+                    w={"fit-content"}
+                    p={2}
+                    size={{ base: "sm" }}
+                    fontSize={{ base: "12px" }}
+                    borderRadius={4}
+                    border="1px"
+                    borderColor={'#F4DFC8'}
+                    background={"#F4DFC8"}
+                    _hover={{
+                      background: "#F4EAE0",
+                    }}
+                    onClick={() => router.push(pathname + `?action=new-github-service&projectId=${projectId}`)}
+                  >
+                    <GithubIconComponent height={16} width={16} />
+                  </Button>
+                </Tooltip>
+                <Tooltip size={'sm'} fontSize={'10px'} label="Add new service to project">
+                  <Button
+                    w={"fit-content"}
+                    p={2}
+                    size={{ base: "sm" }}
+                    fontSize={{ base: "12px" }}
+                    borderRadius={4}
+                    border="1px"
+                    borderColor={'#F4DFC8'}
+                    background={"#F4DFC8"}
+                    _hover={{
+                      background: "#F4EAE0",
+                    }}
+                    onClick={() => router.push(pathname + `?action=new-service&projectId=${project.id}`)}
+                  >
+                    <PlusIcon height={14} color={'inherit'} />
+                  </Button>
+                </Tooltip>
+                <Tooltip size={'sm'} fontSize={'10px'} label="Delete project from RunThrough?">
+                  <Button
+                    w={"fit-content"}
+                    p={2}
+                    size={{ base: "sm" }}
+                    fontSize={{ base: "12px" }}
+                    borderRadius={4}
+                    background={"red.100"}
+                    border="1px"
+                    borderColor={'red.100'}
+                    color={'red.700'}
+                    _hover={{
+                      background: "red.50",
+                      color: 'red.600'
+                    }}
+                    onClick={() => router.push(`?action=delete-project&projectId=${projectId}&returnUrl=/`)}
+                  >
+                    <TrashIcon height={14} color={'inherit'} />
+                  </Button>
+                </Tooltip>
               </HStack>
             </HStack>
 
