@@ -168,7 +168,7 @@ export const CreateNewProjectComponent = (props: Props) => {
     createNewRailwayProjectLoading || isSubmitting || branchesFetchingState;
 
   
-  if (!loading && tokens?.length === 0) {
+  if (isOpen && !loading && tokens?.length === 0) {
     router.push('/settings?mode=token');
     return null;
   }
