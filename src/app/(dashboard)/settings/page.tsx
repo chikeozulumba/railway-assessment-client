@@ -217,7 +217,7 @@ export default function Settings() {
         nameState={nameState}
         tokenState={tokenState}
         isOpen={isOpen}
-        buttonDisabled={loading}
+        buttonDisabled={true}
       />
     </VStack>
   );

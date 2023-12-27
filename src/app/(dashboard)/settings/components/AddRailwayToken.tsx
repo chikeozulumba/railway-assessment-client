@@ -23,6 +23,7 @@ type Props = {
   buttonDisabled?: boolean;
   defaultTokenState?: boolean;
   setDefaultTokenTokenState?: (value: boolean) => void;
+  isLoading?: boolean;
 };
 
 export const AddRailwayTokenComponent = (props: Props) => {
@@ -37,6 +38,7 @@ export const AddRailwayTokenComponent = (props: Props) => {
     setDefaultTokenTokenState,
     nameState,
     tokenState,
+    isLoading
   } = props;
 
   return (
@@ -61,6 +63,7 @@ export const AddRailwayTokenComponent = (props: Props) => {
       handleOnClose={onClose}
       proceed={handleSubmit}
       closeOnOverlayClick={false}
+      buttonDisabled={isLoading}
     >
       <Stack spacing={4}>
         <VStack alignItems={"start"} spacing={-2}>

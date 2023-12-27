@@ -37,7 +37,7 @@ export const DeleteProjectComponent = (props: Props) => {
       });
 
       props.onClose();
-      Toast("Railway project created successfully.", {
+      Toast("Railway project removed successfully.", {
         type: "success",
         time: 5,
       });
