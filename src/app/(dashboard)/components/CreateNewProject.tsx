@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { ApolloError, useMutation, useQuery } from "@apollo/client";
+import { useRouter } from "next/navigation";
 import { ModalComponent } from "@/components/Modal";
 import { Toast } from "@/lib/toast";
 import {
@@ -46,11 +47,12 @@ const initialFormState = {
 };
 
 export const CreateNewProjectComponent = (props: Props) => {
+  const router = useRouter();
   const { refetch: refetchRepositories } = useQuery(USER_GITHUB_REPOSITORIES, {
     skip: true,
   });
 
-  const { data } = useQuery(GET_PROFILE_AND_RAILWAY_TOKENS);
+  const { data, loading } = useQuery(GET_PROFILE_AND_RAILWAY_TOKENS);
   const { refetch } = useQuery(USER_GITHUB_REPOSITORY_WITH_BRANCHES, {
     skip: true,
   });
@@ -165,7 +167,13 @@ export const CreateNewProjectComponent = (props: Props) => {
   const formIsProcessing =
     createNewRailwayProjectLoading || isSubmitting || branchesFetchingState;
 
-  return (
+  
+  if (!loading && tokens?.length === 0) {
+    router.push('/settings?mode=token');
+    return null;
+  }
+
+  return !loading && tokens.length > 0 && (
     <ModalComponent
       title="Create new project"
       description={

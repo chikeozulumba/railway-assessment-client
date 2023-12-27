@@ -52,7 +52,7 @@ export default function DashboardLayout({
   );
 
   const { data: projectsData, loading: projectsLoading } = useQuery(GET_RAILWAY_PROJECTS, {
-    // pollInterval: 5000
+    pollInterval: 20000
   });
 
   const projects: Project[] = useMemo(() => projectsData?.railwayProjects || [], [projectsData]);
