@@ -39,10 +39,6 @@ const ViewProjectServicePage = () => {
   const serviceInstances = service?.serviceInstances?.edges
   const serviceInstancesLength = serviceInstances?.length || 0;
 
-  if (error && !loading) {
-    return notFound();
-  }
-
   const memoisedDeploymentData = useMemo(() => {
     if (!deploymentsLoading && deploymentsData?.getRailwayServiceDeployments) {
       const data = JSON.parse(deploymentsData?.getRailwayServiceDeployments);
@@ -50,9 +46,13 @@ const ViewProjectServicePage = () => {
     }
 
     return [];
-  }, [deploymentsData, service]);
-
+  }, [deploymentsData, service, deploymentsLoading]);
+  
   const isDataSuccessful = !loading && deploymentsData?.getRailwayServiceDeployments
+
+  if (error && !loading) {
+    return notFound();
+  }
 
   return <>
     {<ProjectBreadCrumbs showRoot={false} items={[

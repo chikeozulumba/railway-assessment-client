@@ -51,7 +51,7 @@ export const EnvEditor = (props: Props) => {
     </FormLabel>
     <VStack w={'100%'}>
       {fields.map((entry, i) => {
-        return <HStack w={'100%'}>
+        return <HStack key={i} w={'100%'}>
           <HStack key={'parent-' + i} gap={4}>
             <FormControl isInvalid={Boolean(errors.root?.[i].type)}>
               <Input

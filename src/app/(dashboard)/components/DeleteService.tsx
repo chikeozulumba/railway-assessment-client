@@ -36,7 +36,7 @@ export const DeleteServiceComponent = (props: Props) => {
     }
 
     return queries;
-  }, []);
+  }, [projectId]);
 
   const [deleteRailwayService, { loading: deleteRailwayServiceLoading }] =
     useMutation(DELETE_RAILWAY_SERVICE_MUTATION, {

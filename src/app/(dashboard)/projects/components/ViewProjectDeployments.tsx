@@ -20,6 +20,8 @@ const Wrapper: any = React.forwardRef((props, ref: any) => {
   return <VStack w={'100%'} gap={2} ref={ref} {...props} />
 });
 
+Wrapper.displayName = 'Wrapper';
+
 const ItemWrapper: any = React.forwardRef((props, ref: any) => {
   return <Box
     borderColor={"gray.100"}
@@ -37,6 +39,8 @@ const ItemWrapper: any = React.forwardRef((props, ref: any) => {
     {...props}
   />
 });
+
+ItemWrapper.displayName = 'ItemWrapper';
 
 export const ViewProjectDeploymentsComponent = (props: Props) => {
   const router = useRouter();

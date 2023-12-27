@@ -46,7 +46,7 @@ const initialFormState = {
 };
 
 export const CreateNewProjectComponent = (props: Props) => {
-  const { data: repositories, refetch: refetchRepositories } = useQuery(USER_GITHUB_REPOSITORIES, {
+  const { refetch: refetchRepositories } = useQuery(USER_GITHUB_REPOSITORIES, {
     skip: true,
   });
 
@@ -68,7 +68,7 @@ export const CreateNewProjectComponent = (props: Props) => {
   });
 
   const tokens: RailwayToken[] = useMemo(() => (data?.getRailwayTokens || [])
-    .sort((a: RailwayToken, b: RailwayToken) => Number(b.isDefault) - Number(a.isDefault)), [])
+    .sort((a: RailwayToken, b: RailwayToken) => Number(b.isDefault) - Number(a.isDefault)), [data?.getRailwayTokens])
 
   const [branchesState, setBranchesState] = useState([]);
   const [branchesFetchingState, setBranchesFetchingState] = useState(false);
@@ -91,7 +91,6 @@ export const CreateNewProjectComponent = (props: Props) => {
   }
 
   const handleRepositoryOnChange = async (
-    evt: ChangeEvent<HTMLSelectElement>
   ) => {
     try {
       const tokenId = getValues("tokenId");

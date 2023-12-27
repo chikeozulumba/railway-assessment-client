@@ -64,7 +64,7 @@ export default function DashboardLayout({
 
   const onClose = useCallback(() => {
     router.replace(returnUrl || pathname);
-  }, [returnUrl]);
+  }, [returnUrl, pathname, router]);
 
   const {
     onClose: newServiceModalOnClose,

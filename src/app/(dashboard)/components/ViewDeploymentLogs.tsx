@@ -20,10 +20,14 @@ const Wrapper: any = React.forwardRef((props, ref: any) => {
   return <VStack w={'100%'} gap={0} ref={ref} p={1} {...props} pos={'relative'} />
 });
 
+Wrapper.displayName = 'Wrapper';
+
 const ItemWrapper: any = React.forwardRef((props, ref: any) => {
   return <Box
     w={'100%'} ref={ref} {...props} />
 });
+
+ItemWrapper.displayName = 'ItemWrapper';
 
 function getColors(serverity: string) {
   if (serverity === 'err') {
@@ -65,7 +69,7 @@ export const ViewDeploymentLogsComponent = ({ data, isLoaded, scope, fetchData, 
     } finally {
       setLoading(false);
     }
-  }, [setLoading, logLimit]);
+  }, [setLoading, logLimit, fetchData, scope]);
 
   return <Skeleton hidden={data.length === 0 && isLoaded} minHeight={'50vh'} w={'100%'} borderRadius={4} startColor='gray.50' endColor='#faf6f0' isLoaded={isLoaded}>
     <Box borderRadius={4} borderColor={'gray.100'} borderWidth={1}>

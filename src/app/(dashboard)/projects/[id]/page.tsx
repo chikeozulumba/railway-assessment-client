@@ -33,10 +33,6 @@ export default function ViewProjectsPage() {
   const services = project?.services || [];
   const servicesLength = services.length;
 
-  if (error && !loading) {
-    return notFound();
-  }
-
   const memoisedDeploymentData = useMemo(() => {
     if (!deploymentsDataLoading && deploymentsData?.getRailwayProjectDeployments) {
       const data = JSON.parse(deploymentsData?.getRailwayProjectDeployments);
@@ -44,9 +40,13 @@ export default function ViewProjectsPage() {
     }
 
     return [];
-  }, [deploymentsData]);
+  }, [deploymentsData, deploymentsDataLoading]);
 
   const isDataSuccessful = !deploymentsDataLoading && deploymentsData?.getRailwayProjectDeployments
+
+  if (error && !loading) {
+    return notFound();
+  }
 
   return !loading && <>
     {project && <ProjectBreadCrumbs items={[

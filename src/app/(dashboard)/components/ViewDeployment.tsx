@@ -11,8 +11,6 @@ import {
   Box,
   Tooltip,
   Button,
-  Divider,
-  Spacer,
   ListItem,
   UnorderedList,
   Code,
@@ -75,21 +73,21 @@ export const ViewDeploymentComponent = (props: Props) => {
       return JSON.parse(data?.getDeployment);
     }
     return undefined;
-  }, [data]);
+  }, [data, loading]);
 
   const deploymentLogsData = useMemo(() => {
     if (!deploymentLogsDataLoading && typeof getDeploymentLogsData?.getDeploymentLogs === 'string') {
       return JSON.parse(getDeploymentLogsData?.getDeploymentLogs);
     }
     return [];
-  }, [getDeploymentLogsData]);
+  }, [getDeploymentLogsData, deploymentLogsDataLoading]);
 
   const deploymentBuildLogsData = useMemo(() => {
     if (!deploymentBuildLogsDataLoading && typeof getDeploymentBuildLogsData?.getDeploymentBuildLogs === 'string') {
       return JSON.parse(getDeploymentBuildLogsData?.getDeploymentBuildLogs);
     }
     return [];
-  }, [getDeploymentBuildLogsData]);
+  }, [getDeploymentBuildLogsData, deploymentBuildLogsDataLoading]);
 
   const navigateLogsTypeAndLimit = useCallback(async (value: 'build' | 'deployment' | undefined, limit: number | string = 100) => {
     const url = new URL(window.location.href);
@@ -103,7 +101,7 @@ export const ViewDeploymentComponent = (props: Props) => {
       url.searchParams.set('logLimit', limit.toString());
     }
     return router.push(url.toString());
-  }, []);
+  }, [router]);
 
   const status = deploymentData?.status?.toUpperCase();
   const repo = deploymentData?.meta?.repo;                                                                                                                                    
