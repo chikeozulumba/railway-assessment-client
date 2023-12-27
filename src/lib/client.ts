@@ -47,4 +47,5 @@ export const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
   link: authentication.concat(config),
   typeDefs,
+  credentials: 'include',
 });
