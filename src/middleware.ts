@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
-import { apolloClient } from "./lib/client";
+import { apolloClient } from "./lib/gql";
 import { AUTHORIZE_USER_MUTATION } from "./graphql/mutations";
 import { redirectToSignUp } from "@clerk/nextjs/server";
 

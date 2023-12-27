@@ -1,4 +1,3 @@
-import nookies from "nookies";
 import { ApolloClient, HttpLink, InMemoryCache, gql } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 
@@ -8,20 +7,9 @@ if (!uri) {
   throw new Error("Invalid GraphQL API endpoint provided.");
 }
 
-const config = new HttpLink({
-  uri,
-  credentials: "include",
-});
+export const GRAPHQL_URL = uri;
 
-const authentication = setContext((_, { headers }) => {
-  return {
-    headers: {
-      ...headers,
-    },
-  };
-});
-
-const typeDefs = gql`
+export const typeDefs = gql`
   input ConnectRailwayAccountDTO {
     name: String
     token: String!
@@ -42,6 +30,19 @@ const typeDefs = gql`
     repo: Repo
   }
 `;
+
+const config = new HttpLink({
+  uri,
+  credentials: "include",
+});
+
+const authentication = setContext((_, { headers }) => {
+  return {
+    headers: {
+      ...headers,
+    },
+  };
+});
 
 export const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),

@@ -11,9 +11,11 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <CacheProvider>
       <ChakraProvider theme={theme}>
-        <ApolloGraphQLProvider>
-          <ClerkProvider>{children}</ClerkProvider>
-        </ApolloGraphQLProvider>
+        <ClerkProvider>
+          <ApolloGraphQLProvider>
+            {children}
+          </ApolloGraphQLProvider>
+        </ClerkProvider>
       </ChakraProvider>
     </CacheProvider>
   );
