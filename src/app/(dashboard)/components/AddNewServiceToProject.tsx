@@ -31,8 +31,10 @@ export const AddNewServiceToProjectComponent = (props: Props) => {
   const { isOpen, onClose, project } = props;
 
   const { data: repositories } = useQuery(USER_GITHUB_REPOSITORIES, {
-    variables: { tokenId: project?.tokenId }
+    variables: { tokenId: project?.tokenId },
+    skip: typeof project?.tokenId !== 'string'
   });
+  
   const { refetch } = useQuery(USER_GITHUB_REPOSITORY_WITH_BRANCHES, {
     skip: true,
   });

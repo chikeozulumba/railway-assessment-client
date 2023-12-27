@@ -78,7 +78,7 @@ export function NavigationBar() {
                         Settings
                       </Link>
                     </MenuItem>
-                    <MenuItem onClick={() => signOut(() => router.push("/login"))} fontSize={"small"}>
+                    <MenuItem onClick={() => signOut(() => router.push("/"))} fontSize={"small"}>
                       Logout
                     </MenuItem>
                   </MenuList>
