@@ -50,7 +50,7 @@ export const DeleteServiceComponent = (props: Props) => {
       });
 
       props.onClose();
-      Toast("Railway service created successfully.", {
+      Toast("Railway service removed successfully.", {
         type: "success",
         time: 5,
       });
